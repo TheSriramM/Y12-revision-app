@@ -7,6 +7,7 @@ app = Flask(
     template_folder='templates',
     static_folder='static',
 )
+app.secret_key = 'your_secret_key_here'  # Add this for session management
 DATABASE = "database.db"
 
 def get_db():
@@ -22,8 +23,16 @@ def close_connection(exception):
         db.close()
 
 @app.route('/')
+def index():
+    return render_template("home.html")
+
+@app.route('/home')
 def home():
     return render_template("home.html",)
+
+@app.route('/login')
+def login():
+    return render_template("login.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
