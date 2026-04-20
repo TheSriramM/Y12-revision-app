@@ -7,7 +7,7 @@ app = Flask(
     template_folder='templates',
     static_folder='static',
 )
-app.secret_key = 'your_secret_key_here'  # Add this for session management
+app.secret_key = 'my_secret_key'  # Add this for session management
 DATABASE = "database.db"
 
 def get_db():
@@ -30,9 +30,31 @@ def index():
 def home():
     return render_template("home.html",)
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        print(username, password)  # test first
+
+        # later: check database here
+        session['username'] = username
+        return redirect(url_for('dashboard'))
+    
     return render_template("login.html")
+
+@app.route('/dashboard')
+def dashboard():
+    if 'username' not in session:
+        return redirect(url_for('login'))  # block access
+
+    return render_template("dashboard.html", username=session['username'])
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('home'))
 
 if __name__ == "__main__":
     app.run(debug=True)
