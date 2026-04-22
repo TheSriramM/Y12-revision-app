@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css">
 </head>
 
 <body>
+  <br>
     <form method="POST" action="{{ url_for('login') }}">
   <div>
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" placeholder="Enter username" required>
+    <label for="username">Username or Email:</label>
+    <input type="text" id="username" name="username" placeholder="Enter username or email" required>
   </div>
 
   <br>
@@ -20,8 +22,10 @@
     <input type="password" id="password" name="password" placeholder="Enter password" required>
   </div>
 
+  <br>
+  <a href="{{ url_for('register') }}" class="w3-bar-item w3-button">Dont have an account? Create one</a>
   <br><br>
-  <button type="submit">Login</button>
+  <button type="submit" class="w3-round-large">Login</button>
 
 </form>
 </body>

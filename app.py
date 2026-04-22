@@ -1,4 +1,5 @@
 from flask import Flask, session, request, render_template, redirect, url_for, g
+from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 import os
 
@@ -33,16 +34,58 @@ def home():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
+        identifier = request.form['username']  # can be username OR email
+        password = request.form['password']
+
+        db = get_db()
+        cursor = db.cursor()
+
+        cursor.execute("""
+            SELECT id, username, password_hash 
+            FROM users 
+            WHERE username = ? OR email = ?
+        """, (identifier, identifier))
+
+        user = cursor.fetchone()
+
+        if user and check_password_hash(user[2], password):
+            session['user_id'] = user[0]
+            session['username'] = user[1]
+            return redirect(url_for('dashboard'))
+        else:
+            return "Invalid login"
+
+    return render_template("login.html")
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        email = request.form['email']
         username = request.form['username']
         password = request.form['password']
 
-        print(username, password)  # test first
+        hashed_password = generate_password_hash(password)
 
-        # later: check database here
-        session['username'] = username
-        return redirect(url_for('dashboard'))
-    
-    return render_template("login.html")
+        db = get_db()
+        cursor = db.cursor()
+
+        try:
+            cursor.execute(
+                "INSERT INTO users (email, username, password_hash) VALUES (?, ?, ?)",
+                (email, username, hashed_password)
+            )
+            db.commit()
+
+            user_id = cursor.lastrowid
+            session['user_id'] = user_id
+            session['username'] = username
+
+        except sqlite3.IntegrityError:
+            return "Username or email already exists"
+
+        return redirect(url_for('login'))
+
+    return render_template("register.html")
 
 @app.route('/dashboard')
 def dashboard():
