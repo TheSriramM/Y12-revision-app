@@ -1,7 +1,6 @@
-from flask import Flask, session, request, render_template, redirect, url_for, g
+from flask import Flask, session, request, render_template, redirect, url_for, g, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
-import os
 
 app = Flask(
     __name__,
@@ -63,6 +62,17 @@ def register():
         email = request.form['email']
         username = request.form['username']
         password = request.form['password']
+
+        # Backend validation to make sure the user doesn't enter more than the limit
+        # Doesn't show due to the maxlength set in HTML
+
+        if len(username) > 20:
+            flash("Username too long (max 20 characters)")
+            return redirect(url_for('register'))
+        
+        if len(password) > 64:
+            flash("Password too long (max 64 characters)")
+            return redirect(url_for('register'))
 
         hashed_password = generate_password_hash(password)
 
