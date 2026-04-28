@@ -101,6 +101,10 @@ def register():
 
     return render_template("register.html")
 
+@app.route('/sample_sets')
+def sample_sets():
+    return render_template("sample_sets.html")
+
 @app.route('/dashboard')
 def dashboard():
     if 'username' not in session:
