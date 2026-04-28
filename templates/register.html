@@ -73,12 +73,16 @@
       type="password" 
       name="password" 
       id="password"
+      minlength="6"
       maxlength="64"
-      placeholder="Enter username"
+      placeholder="Enter password"
       required
     >
+    <p class="w3-small w3-text-grey">Minimum 6 characters</p>
     <p id="password-count" class="w3-small w3-text-grey">0 / 64</p>
-
+    <p>Already have an account? 
+      <a href="{{ url_for('login') }}">Log in</a>
+    </p>
     <button class="w3-button w3-blue w3-block w3-round w3-margin-top">
       Register
     </button>

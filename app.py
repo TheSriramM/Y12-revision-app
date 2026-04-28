@@ -63,15 +63,19 @@ def register():
         username = request.form['username']
         password = request.form['password']
 
-        # Backend validation to make sure the user doesn't enter more than the limit
+        # Backend validation to make sure the user doesn't enter more or less than the limit
         # Doesn't show due to the maxlength set in HTML
 
-        if len(username) > 20:
-            flash("Username too long (max 20 characters)")
+        if len(username) > 30:
+            flash("Username too long (max 30 characters)")
             return redirect(url_for('register'))
         
         if len(password) > 64:
             flash("Password too long (max 64 characters)")
+            return redirect(url_for('register'))
+        
+        if len(password) < 6:
+            flash("Password must be at least 6 characters long")
             return redirect(url_for('register'))
 
         hashed_password = generate_password_hash(password)
