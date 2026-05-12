@@ -4,10 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Samples</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='js/flashcards.js') }}"></script>
 </head>
 <body>
-    
+    <div class="flashcard-border">
+        <div class="flashcard-container">
+            <div class="flashcard" onclick="flipcard()">
+                <p id="cardText">What is H2CO3?</p>
+            </div>
+
+            <div class="controls">
+                <button onclick="prevCard()">Previous</button>
+                <button onclick="nextCard()">Next</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

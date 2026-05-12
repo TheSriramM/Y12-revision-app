@@ -7,7 +7,7 @@ app = Flask(
     template_folder='templates',
     static_folder='static',
 )
-app.secret_key = 'my_secret_key'  # Add this for session management
+app.secret_key = 'wowow'
 DATABASE = "database.db"
 
 def get_db():
@@ -90,6 +90,7 @@ def register():
             )
             db.commit()
 
+            # Store the variables using session
             user_id = cursor.lastrowid
             session['user_id'] = user_id
             session['username'] = username
