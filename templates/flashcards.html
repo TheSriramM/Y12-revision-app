@@ -1,16 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Samples</title>
+{% extends "base.html" %}
+
+{% block head %}
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="{{ url_for('static', filename='js/flashcards.js') }}"></script>
-</head>
-<body>
+{% endblock %}
+
+{% block content %}
     <div class="flashcard-border">
+        <h1>Level 2 Chemistry</h1>
         <div class="flashcard-container">
-            <div class="flashcard" onclick="flipcard()">
+            <div class="flashcard" onclick="flipCard()">
                 <p id="cardText">What is H2CO3?</p>
             </div>
 
@@ -20,5 +19,4 @@
             </div>
         </div>
     </div>
-</body>
-</html>
+{% endblock %}

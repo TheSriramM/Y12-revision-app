@@ -29,7 +29,6 @@
 
   <h2 class="w3-center">Register</h2>
 
-  <!-- Flash messages -->
   {% with messages = get_flashed_messages() %}
     {% if messages %}
       <div class="w3-panel w3-red w3-round">
@@ -42,7 +41,6 @@
 
   <form method="POST" action="{{ url_for('register') }}">
 
-    <!-- EMAIL -->
     <label>Email</label>
     <input 
       class="w3-input w3-border w3-margin-bottom" 

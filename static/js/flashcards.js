@@ -1,4 +1,5 @@
 const flashcards = [
+  { question: "What is H2CO3?", answer: "Carbonic acid" },
   { question: "What is H2O?", answer: "Water" },
   { question: "pH of neutral solution?", answer: "7" }
 ];
@@ -8,6 +9,9 @@ let showingAnswer = false;
 
 function updateCard() {
   const card = document.getElementById("cardText");
+  // Check the elements have loaded
+  // Since extends base.html
+  if (!card) return;
   card.innerText = showingAnswer
     ? flashcards[index].answer
     : flashcards[index].question;
@@ -29,5 +33,5 @@ function prevCard() {
   showingAnswer = false;
   updateCard();
 }
-
-updateCard();
+// Have elements loaded?
+document.addEventListener("DOMContentLoaded", updateCard);

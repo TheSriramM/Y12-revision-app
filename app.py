@@ -102,9 +102,17 @@ def register():
 
     return render_template("register.html")
 
-@app.route('/sample_sets')
-def sample_sets():
-    return render_template("sample_sets.html")
+@app.route('/features')
+def features():
+    return render_template("features.html")
+
+@app.route('/flashcards')
+def flashcards():
+    return render_template("flashcards.html")
+
+@app.route('/quiz')
+def quiz():
+    return render_template("quiz.html")
 
 @app.route('/dashboard')
 def dashboard():
@@ -112,7 +120,7 @@ def dashboard():
         return redirect(url_for('login'))  # block access
 
     return render_template("dashboard.html", username=session['username'])
-
+    
 @app.route('/logout')
 def logout():
     session.clear()
