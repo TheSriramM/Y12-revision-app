@@ -6,4 +6,30 @@
 {% endblock %}
 
 {% block content %}
+    <h1>Level 2 Chemistry</h1>
+    <div class="quiz-container">
+
+        <h2>{{ question.question }}</h2>
+
+        <form method="POST">
+
+            {% for option in question.options %}
+
+                <button
+                    type="submit"
+                    name="answer"
+                    value="{{ option }}"
+                >
+                {{ option }}
+                </button>
+
+                <br><br>
+
+            {% endfor %}
+
+        </form>
+
+        <p>{{ result }}</p>
+
+    </div>
 {% endblock %}

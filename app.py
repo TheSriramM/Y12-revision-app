@@ -9,6 +9,19 @@ app = Flask(
 )
 app.secret_key = 'wowow'
 DATABASE = "database.db"
+example_quiz = [
+    {
+        "question": "What is H2O?",
+        "options": ["Water", "Oxygen", "Salt", "Hydrogen"],
+        "answer": "Water"
+    },
+
+    {
+        "question": "What is the pH of a neutral solution?",
+        "options": ["7", "1", "14", "3"],
+        "answer": "7"
+    }
+]
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -110,9 +123,44 @@ def features():
 def flashcards():
     return render_template("flashcards.html")
 
-@app.route('/quiz')
+@app.route('/quiz', methods=['GET', 'POST'])
 def quiz():
-    return render_template("quiz.html")
+    result = ""
+
+    if 'cur_question' not in session:
+        session['cur_question'] = 0
+        session['correct'] = 0
+        session['incorrect'] = 0
+
+    cur_question = session['cur_question']
+
+    if request.method == "POST":
+        selected = request.form.get("answer")
+        correct_answer = example_quiz[cur_question]["answer"]
+
+        if selected == correct_answer:
+            result = "Correct!"
+            # The second parameter is just in case the session variable has not been set or defined properly in which case 0 will be returned
+            session['correct'] = session.get('correct', 0) + 1
+        else:
+            result = "Incorrect"
+            # The second parameter is just in case the session variable has not been set or defined properly in which case 0 will be returned
+            session['incorrect'] = session.get('incorrect', 0) + 1
+
+        cur_question += 1
+        session['cur_question'] = cur_question
+
+    if cur_question >= len(example_quiz):
+        return redirect(url_for('quiz_complete'))
+
+    question = example_quiz[cur_question]
+    return render_template("quiz.html", question=question, result=result)
+
+@app.route('/quiz_complete')
+def quiz_complete():
+    correct = session.get('correct', 0)
+    incorrect = session.get('incorrect', 0)
+    return render_template("quiz_complete.html", correct=correct, incorrect=incorrect)
 
 @app.route('/dashboard')
 def dashboard():
