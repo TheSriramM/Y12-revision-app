@@ -1,22 +1,44 @@
 {% extends "base.html" %}
 
-{% block head %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="{{ url_for('static', filename='js/flashcards.js') }}"></script>
-{% endblock %}
-
 {% block content %}
-    <div class="flashcard-border">
-        <h1>Level 2 Chemistry</h1>
-        <div class="flashcard-container">
-            <div class="flashcard" onclick="flipCard()">
-                <p id="cardText">What is H2CO3?</p>
-            </div>
 
-            <div class="controls">
-                <button onclick="prevCard()">Previous</button>
-                <button onclick="nextCard()">Next</button>
-            </div>
+<h1>Level 2 Chemistry</h1>
+
+<div class="flashcard-container">
+
+    <form method="POST">
+
+        <button
+            class="flashcard"
+            type="submit"
+            name="action"
+            value="flip"
+        >
+            {{ card_text }}
+        </button>
+
+        <div class="controls">
+
+            <button
+                type="submit"
+                name="action"
+                value="prev"
+            >
+                Previous
+            </button>
+
+            <button
+                type="submit"
+                name="action"
+                value="next"
+            >
+                Next
+            </button>
+
         </div>
-    </div>
+
+    </form>
+
+</div>
+
 {% endblock %}

@@ -23,6 +23,23 @@ example_quiz = [
     }
 ]
 
+example_flashcards = [
+    {
+        "question": "What is H2CO3?",
+        "answer": "Carbonic acid"
+    },
+
+    {
+        "question": "What is H2O?",
+        "answer": "Water"
+    },
+
+    {
+        "question": "pH of neutral solution?",
+        "answer": "7"
+    }
+]
+
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
@@ -119,9 +136,44 @@ def register():
 def features():
     return render_template("features.html")
 
-@app.route('/flashcards')
+@app.route('/flashcards', methods=["GET", "POST"])
 def flashcards():
-    return render_template("flashcards.html")
+    # initialize session values only it doesn't reset
+    # the current index or answer visibility on every request
+    if 'cur_index' not in session:
+        session['cur_index'] = 0
+    session.setdefault('showing_answer', False)
+
+    if request.method == "POST":
+        action = request.form.get("action")
+
+        if action == "flip":
+            session['showing_answer'] = not session['showing_answer']
+
+        elif action == "next":
+            if session['cur_index'] < len(example_flashcards) - 1:
+                session['cur_index'] += 1
+                
+            session['showing_answer'] = False
+        
+        elif action == "prev":
+            if session['cur_index'] > 0:
+                session['cur_index'] -= 1
+
+            session['showing_answer'] = False
+        
+    current_card = example_flashcards[session['cur_index']]
+
+    if session['showing_answer']:
+        card_text = current_card["answer"]
+
+    else:
+        card_text = current_card["question"]
+
+    return render_template(
+        "flashcards.html",
+        card_text=card_text
+    )
 
 @app.route('/quiz', methods=['GET', 'POST'])
 def quiz():
