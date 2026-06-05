@@ -1,4 +1,4 @@
-from flask import Flask, session, request, render_template, redirect, url_for, g, flash
+from flask import Flask, session, request, render_template, redirect, url_for, g, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 
@@ -166,13 +166,25 @@ def flashcards():
 
     if session['showing_answer']:
         card_text = current_card["answer"]
-
     else:
         card_text = current_card["question"]
 
+
+    # Return JSON for AJAX requests (just the data for JS)
+    # This is a dictionary for the js
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify({
+            'card_text': card_text,
+            'showing_answer': session['showing_answer'],
+            'current_index': session['cur_index'],
+            'total_cards': len(example_flashcards)
+        })
+    
     return render_template(
         "flashcards.html",
-        card_text=card_text
+        card_text=card_text,
+        current_index=session['cur_index'],
+        total_cards=len(example_flashcards)
     )
 
 @app.route('/quiz', methods=['GET', 'POST'])

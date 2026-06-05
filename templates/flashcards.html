@@ -5,40 +5,45 @@
 <h1>Level 2 Chemistry</h1>
 
 <div class="flashcard-container">
+    
+    <div class="flashcard-header">
+        <span id="card-counter">Card {{ current_index + 1 }} of {{ total_cards }}</span>
+    </div>
 
-    <form method="POST">
+    <button
+        id="flashcard"
+        class="flashcard"
+        data-index="{{ current_index }}"
+        data-total="{{ total_cards }}"
+    >
+        <span id="card-text">{{ card_text }}</span>
+    </button>
 
+    <div class="controls">
         <button
-            class="flashcard"
-            type="submit"
-            name="action"
-            value="flip"
+            id="prev-btn"
+            class="control-btn"
         >
-            {{ card_text }}
+            ← Previous
         </button>
 
-        <div class="controls">
+        <button
+            id="flip-btn"
+            class="control-btn flip-btn-primary"
+        >
+            Flip Card
+        </button>
 
-            <button
-                type="submit"
-                name="action"
-                value="prev"
-            >
-                Previous
-            </button>
-
-            <button
-                type="submit"
-                name="action"
-                value="next"
-            >
-                Next
-            </button>
-
-        </div>
-
-    </form>
+        <button
+            id="next-btn"
+            class="control-btn"
+        >
+            Next →
+        </button>
+    </div>
 
 </div>
+
+<script src="{{ url_for('static', filename='js/flashcards.js') }}"></script>
 
 {% endblock %}
