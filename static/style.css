@@ -25,6 +25,29 @@ main, .content {
     padding: 24px;
 }
 
+.navbar {
+    display: flex;
+    gap: 10px;
+    background: #1976d2;
+    padding: 12px 20px;
+    border-radius: 20px;
+    width: fit-content;
+    margin: 20px auto;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 12px;
+    transition: 0.3s; /* Slow transition for changes such as colour change when hovering */
+}
+
+.navbar a:hover {
+    background: rgba(255,255,255,0.2);
+}
+
 .flashcard-border {
     border: 2px solid #888;
     border-radius: 14px;
