@@ -3,5 +3,17 @@
 {% block title %}Quizcards{% endblock %}
 
 {% block content %}
-    <h2>This is my project.</h2>
+    <div class="home-body">
+        <h2>Use this app to get good.</h2>
+        <div class="hero-buttons">
+            <a href="{{ url_for('register') }}" class="btn-primary">
+                Get Started
+            </a>
+
+            <a href="{{ url_for('login') }}" class="btn-secondary">
+                Log In
+            </a>
+        </div>
+    </div>
+
 {% endblock %}
