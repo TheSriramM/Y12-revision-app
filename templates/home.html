@@ -4,15 +4,34 @@
 
 {% block content %}
     <div class="home-body">
-        <h2>Use this app to get good.</h2>
-        <div class="hero-buttons">
-            <a href="{{ url_for('register') }}" class="btn-primary">
-                Get Started
-            </a>
+        <div class="home-hero">
+            <p class="hero-subtitle">Get good</p>
+            <div class="hero-buttons">
+                <a href="{{ url_for('register') }}" class="btn-primary">Get Started</a>
+                <a href="{{ url_for('login') }}" class="btn-secondary">Log In</a>
+            </div>
+        </div>
 
-            <a href="{{ url_for('login') }}" class="btn-secondary">
-                Log In
-            </a>
+        <div class="home-features">
+            <article class="feature-card">
+                <div class="feature-icon">📚</div>
+                <h2>Create</h2>
+                <p>Build your own flashcard decks</p>
+            </article>
+            <article class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h2>Practice</h2>
+                <p>Test yourself with quizzes</p>
+            </article>
+            <article class="feature-card">
+                <div class="feature-icon">📈</div>
+                <h2>Progress</h2>
+                <p>Track study performance</p>
+            </article>
+        </div>
+
+        <div class="home-bottom">
+            <a href="{{ url_for('features') }}" class="link-secondary">See more features</a>
         </div>
     </div>
 
