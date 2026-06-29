@@ -82,9 +82,11 @@ def login():
             session['username'] = user[1]
             return redirect(url_for('dashboard'))
         else:
-            return "Invalid login"
-
-    return render_template("login.html")
+            flash("Invalid login")
+            return render_template("login.html", identifier=identifier)
+        
+    # Sets the username input value to identifier which means the username/email field remains filled
+    return render_template("login.html", identifier="")
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
