@@ -1,0 +1,169 @@
+body{
+    background:#f7f7f7;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.logo{
+    text-align:center;
+    font-size:3rem;
+    margin-top:20px;
+    margin-bottom:25px;
+}
+
+.navbar{
+    width:85%;
+    max-width:1300px;
+    margin:auto;
+    background:#2E90E5;
+    border-radius:20px;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px 35px;
+    box-shadow:0 10px 25px rgba(0,0,0,.18);
+}
+
+/* The right side of the navbar (decks etc.) */
+.nav-left{
+    display:flex;
+    gap:40px;
+}
+
+.nav-left a{
+    color:white;
+    text-decoration:none;
+    font-weight:bold;
+    transition:.25s;
+}
+
+.nav-left a:hover{
+    opacity:.75;
+}
+
+/* The right side of the navbar (profile button) */
+.nav-right{
+    display:flex;
+    align-items:center;
+    gap:20px;
+    color:white;
+}
+
+.profile-btn{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:white;
+    color:#2E90E5;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-decoration:none;
+    font-size:20px;
+    font-weight:bold;
+}
+
+.welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.welcome-card {
+    width: 85%;
+    max-width: 1000px;
+    background: white;
+    border-radius: 24px;
+    padding: 50px;
+    box-shadow: 0 14px 40px rgba(16, 24, 40, 0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+    border: 1px solid #dde2e8;
+}
+
+.welcome-content {
+    flex: 1;
+}
+
+.welcome-content h2 {
+    margin: 0 0 12px 0;
+    color: #222;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.welcome-content p {
+    margin: 0;
+    color: #515b6c;
+    font-size: 1.1rem;
+}
+
+.welcome .btn-primary {
+    white-space: nowrap;
+    padding: 14px 32px;
+    font-size: 1rem;
+    border-radius: 15px;
+}
+
+.stats-cards {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: 24px;
+    padding: 40px 20px;
+    flex-wrap: wrap;
+    width: 85%;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+.stat-card {
+    flex: 1;
+    min-width: 200px;
+    background: white;
+    border-radius: 20px;
+    padding: 32px 24px;
+    box-shadow: 0 14px 40px rgba(16, 24, 40, 0.08);
+    border: 1px solid #dde2e8;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 50px rgba(16, 24, 40, 0.12);
+}
+
+.stat-icon {
+    font-size: 3rem;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #2E90E5 0%, #1e5aa8 100%);
+    border-radius: 16px;
+}
+
+.stat-info h3 {
+    margin: 0 0 8px 0;
+    color: #222;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-info p {
+    margin: 0;
+    color: #2E90E5;
+    font-size: 1.8rem;
+    font-weight: 700;
+}

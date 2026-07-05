@@ -233,7 +233,18 @@ def dashboard():
     if 'username' not in session:
         return redirect(url_for('login'))  # block access
 
-    return render_template("dashboard.html", username=session['username'])
+    # Get the number of decks the user has created
+    db = get_db()
+    cursor = db.cursor()
+    
+    # Query the total number of decks for this user
+    cursor.execute("""
+        SELECT COUNT(*) FROM topics WHERE user_id = ?
+    """, (session['user_id'],))
+    
+    deck_count = cursor.fetchone()[0]
+
+    return render_template("dashboard.html", username=session['username'], deck_count=deck_count)
     
 @app.route('/logout')
 def logout():
