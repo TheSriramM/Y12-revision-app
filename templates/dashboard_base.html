@@ -27,40 +27,7 @@
             </div>
         </nav>
     </header>
-
-    <div class="welcome">
-        <div class="welcome-card">
-            <div class="welcome-content">
-                <h2>Welcome back, {{ session['username'] }}! 👋</h2>
-                <p>Let's continue your learning journey</p>
-            </div>
-            <button class="btn-primary">Continue Studying</button>
-        </div>
-    </div>
-
-    <div class="stats-cards">
-        <div class="stat-card">
-            <div class="stat-icon">🔥</div>
-            <div class="stat-info">
-                <h3>Daily Streak</h3>
-                <p id="streak-value">0 days</p>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">📚</div>
-            <div class="stat-info">
-                <h3>Total Decks</h3>
-                <p id="total-decks-value">{{ deck_count }}</p>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">✅</div>
-            <div class="stat-info">
-                <h3>Total Tests</h3>
-                <p id="total-tests-value">{{ deck_count }}</p>
-            </div>
-        </div>
-    </div>
+    
     {% block content %}{% endblock %}
 
 </body>
