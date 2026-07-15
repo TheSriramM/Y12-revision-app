@@ -1,11 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Decks</title>
-</head>
-<body>
-    
-</body>
-</html>
+{% extends "dashboard_base.html" %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+    <script src="{{ url_for('static', filename='js/flashcards.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="create decks-header">
+        <h2>My Decks</h2>
+        <div class="create-action">
+            <a href="#" class="btn-primary btn-large">Create a deck</a>
+        </div>
+    </div>
+    <div class="search-sort">
+        <!-- Do this later -->
+    </div>
+    <div class="decks-container">
+        {% if decks and decks|length > 0 %}
+
+            <div class="decks-grid">
+                {% for deck in decks %}
+
+                    <div class="deck-card">
+                        <div class="deck-card-body">
+                            <h3 class="deck-title">{{ deck.title or deck.name }}</h3>
+                            <p class="deck-desc">{{ deck.description or "" }}</p>
+                        </div>
+                        <div class="deck-card-footer">
+                            <button class="btn-secondary">Open</button>
+                        </div>
+                    </div>
+
+                {% endfor %}
+            </div>
+            
+        {% else %}
+            <div class="empty-message">
+            <p>You have no decks yet. Create some to get started.</p>
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock %}

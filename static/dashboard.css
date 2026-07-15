@@ -167,3 +167,127 @@ body{
     font-size: 1.8rem;
     font-weight: 700;
 }
+/* Decks page */
+.create h2 {
+    font-size: 35px;
+    font-weight: 500;
+    padding: 20px;
+}
+
+.create {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    width: 85%;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+/* Primary button used in several places */
+.btn-primary {
+    background: linear-gradient(90deg, #2E90E5 0%, #1e5aa8 100%);
+    color: white;
+    padding: 20px 27px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 8px 20px rgba(46,144,229,0.18);
+    border: none;
+    display: inline-block;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+}
+
+/* Header variant for decks page to center title and show a prominent create button */
+.decks-header {
+    width: 85%;
+    max-width: 1000px;
+    margin: 28px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.decks-header h2 {
+    margin: 0;
+    font-size: 35px;
+    font-weight: 600;
+}
+
+.decks-header .create-action {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.btn-primary.btn-large {
+    padding: 14px 26px;
+    font-size: 1.05rem;
+    min-width: 240px;
+    border-radius: 14px;
+    box-shadow: 0 12px 30px rgba(46,144,229,0.18);
+    text-align: center;
+}
+
+/* Decks grid and cards */
+.decks-container {
+    width: 85%;
+    max-width: 1300px;
+    margin: 24px auto;
+}
+
+/* Fitting as many columns as possible 220px apart*/
+.decks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 18px;
+}
+
+.deck-card {
+    background: white;
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: 0 8px 20px rgba(16,24,40,0.06);
+    border: 1px solid #eceff3;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.deck-title {
+    margin: 0 0 8px 0;
+    font-size: 1.15rem;
+    color: #222;
+}
+
+.deck-desc {
+    margin: 0 0 12px 0;
+    color: #55606a;
+    font-size: 0.95rem;
+}
+
+.deck-card-footer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid #2E90E5;
+    color: #2E90E5;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.empty-message {
+    text-align: center;
+    padding: 40px 20px;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e6e9ee;
+}

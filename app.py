@@ -245,6 +245,30 @@ def dashboard():
     deck_count = cursor.fetchone()[0]
 
     return render_template("dashboard.html", username=session['username'], deck_count=deck_count)
+
+@app.route('/decks')
+def decks():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    db = get_db()
+    cursor = db.cursor()
+
+    # Get decks/topics for the current user
+    cursor.execute(
+        "SELECT id, name, description FROM topics WHERE user_id = ?",
+        (session['user_id'],)
+    )
+    rows = cursor.fetchall()
+
+    # Convert rows to list of dicts using list comprehension
+    # The if len(topic) > 2 exists in case there is no description
+    decks = [
+        {"id": topic[0], "name": topic[1], "description": topic[2] if len(topic) > 2 else ""}
+        for topic in rows
+    ]
+
+    return render_template("decks.html", decks=decks)
     
 @app.route('/logout')
 def logout():
