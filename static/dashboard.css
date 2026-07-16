@@ -241,6 +241,7 @@ body{
     width: 85%;
     max-width: 1300px;
     margin: 24px auto;
+    padding-top: 1%;
 }
 
 /* Fitting as many columns as possible 220px apart*/
@@ -259,12 +260,26 @@ body{
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    gap: 20px;
+}
+
+.deck-card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+}
+
+.deck-card:hover {
+    transform: translateY(-2px);
 }
 
 .deck-title {
     margin: 0 0 8px 0;
-    font-size: 1.15rem;
+    font-size: 1.25rem;
     color: #222;
+    font-weight: 600;
 }
 
 .deck-desc {
@@ -275,7 +290,13 @@ body{
 
 .deck-card-footer {
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
+}
+
+.deck-card-footer .btn-primary {
+    width: 70%;
+    max-width: 180px;
+    padding: 12px 18px;
 }
 
 .btn-secondary {
@@ -444,6 +465,46 @@ body{
     margin-top: 8px;
 }
 
+.deck-overview-card {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.back-link {
+    color: #2E90E5;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.deck-overview-title {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.deck-overview-title h1 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+.deck-overview-title p {
+    margin: 0;
+    color: #55606a;
+    font-size: 1.05rem;
+}
+
+.deck-action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.danger-btn {
+    border-color: #e74c3c;
+    color: #e74c3c;
+}
+
 .form-section h2 {
     font-weight: 500;
     font-size: 25px;
@@ -452,7 +513,7 @@ body{
 .deck-subject {
     margin: 6px 0 0 0;
     color: #2E90E5;
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 600;
 }
 

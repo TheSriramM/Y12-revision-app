@@ -23,14 +23,14 @@
 
                     <div class="deck-card">
                         <div class="deck-card-body">
-                            <h3 class="deck-title">{{ deck.title or deck.name }}</h3>
+                            <h3 class="deck-title">{{ deck.name }}</h3>
                             <p class="deck-desc">{{ deck.description or "" }}</p>
                             {% if deck.subject %}
                                 <p class="deck-subject">Subject: {{ deck.subject }}</p>
                             {% endif %}
                         </div>
                         <div class="deck-card-footer">
-                            <button class="btn-secondary">Open</button>
+                            <a href="{{ url_for('edit_deck', deck_id=deck.id) }}" class="btn-primary">Open</a>
                         </div>
                     </div>
 

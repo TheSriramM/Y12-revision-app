@@ -273,6 +273,34 @@ def decks():
 
     return render_template("decks.html", decks=decks)
 
+@app.route('/edit_deck/<int:deck_id>')
+def edit_deck(deck_id):
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(
+        "SELECT id, name, description, subject, cover_color, is_public FROM topics WHERE id = ? AND user_id = ?",
+        (deck_id, session['user_id'])
+    )
+    deck = cursor.fetchone()
+
+    if not deck:
+        flash("Deck not found.")
+        return redirect(url_for('decks'))
+
+    form_data = {
+        "deck_id": deck[0],
+        "deck_name": deck[1],
+        "description": deck[2] or "",
+        "subject": deck[3] or "",
+        "cover_color": deck[4] or "#2E90E5",
+        "visibility": "public" if deck[5] else "private"
+    }
+
+    return render_template("edit_deck.html", form_data=form_data)
+
 @app.route('/create_deck', methods=['GET', 'POST'])
 def create_deck():
 
