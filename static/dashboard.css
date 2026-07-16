@@ -194,10 +194,13 @@ body{
     text-decoration: none;
     box-shadow: 0 8px 20px rgba(46,144,229,0.18);
     border: none;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
-.btn-primary:hover {
+.btn-primary:hover, .btn-secondary:hover {
     transform: translateY(-2px);
 }
 
@@ -279,7 +282,7 @@ body{
     background: transparent;
     border: 1px solid #2E90E5;
     color: #2E90E5;
-    padding: 8px 12px;
+    padding: 14px 32px;
     border-radius: 10px;
     cursor: pointer;
 }
@@ -310,6 +313,7 @@ body{
     margin: 0 0 8px 0;
     font-size: 2rem;
     color: #222;
+    font-weight: 500;
 }
 
 .create-deck-header p {
@@ -440,9 +444,23 @@ body{
     margin-top: 8px;
 }
 
+.form-section h2 {
+    font-weight: 500;
+    font-size: 25px;
+}
+
 .deck-subject {
     margin: 6px 0 0 0;
     color: #2E90E5;
     font-size: 0.9rem;
     font-weight: 600;
+}
+
+/* Center the text on the buttons */
+.btn-primary,
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
