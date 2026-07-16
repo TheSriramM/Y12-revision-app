@@ -12,7 +12,7 @@
                 <h2>Welcome back, {{ session['username'] }}! 👋</h2>
                 <p>Let's continue your learning journey</p>
             </div>
-            <button class="btn-primary">Continue Studying</button>
+            <a href="{{ url_for('decks') }}" class="btn-primary">Continue studying</a>
         </div>
     </div>
 

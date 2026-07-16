@@ -269,6 +269,10 @@ def decks():
     ]
 
     return render_template("decks.html", decks=decks)
+
+@app.route('/create_deck')
+def create_deck():
+    return render_template("create_deck.html")
     
 @app.route('/logout')
 def logout():
