@@ -9,6 +9,7 @@ app = Flask(
 )
 app.secret_key = 'wowow'
 DATABASE = "database.db"
+
 example_quiz = [
     {
         "question": "What is H2O?",
@@ -254,25 +255,88 @@ def decks():
     db = get_db()
     cursor = db.cursor()
 
-    # Get decks/topics for the current user
     cursor.execute(
-        "SELECT id, name, description FROM topics WHERE user_id = ?",
+        "SELECT id, name, description, subject FROM topics WHERE user_id = ?",
         (session['user_id'],)
     )
     rows = cursor.fetchall()
 
-    # Convert rows to list of dicts using list comprehension
-    # The if len(topic) > 2 exists in case there is no description
     decks = [
-        {"id": topic[0], "name": topic[1], "description": topic[2] if len(topic) > 2 else ""}
+        {
+            "id": topic[0],
+            "name": topic[1],
+            "description": topic[2] or "",
+            "subject": topic[3] or ""
+        }
         for topic in rows
     ]
 
     return render_template("decks.html", decks=decks)
 
-@app.route('/create_deck')
+@app.route('/create_deck', methods=['GET', 'POST'])
 def create_deck():
-    return render_template("create_deck.html")
+
+    # If the user tries to access this page without logging in through the modifying the url
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    # The fields
+    form_data = {
+        "deck_name": "",
+        "subject": "",
+        "description": "",
+        "cover_color": "",
+        "visibility": "private"
+    }
+
+    # Get what the user entered as the input for each field
+    if request.method == 'POST':
+        deck_name = request.form.get('deck_name', '').strip()
+        subject = request.form.get('subject', '').strip()
+        description = request.form.get('description', '').strip()
+        cover_color = request.form.get('cover_color', '').strip() or "#2E90E5"
+        visibility = request.form.get('visibility', 'private')
+
+        form_data.update({
+            "deck_name": deck_name,
+            "subject": subject,
+            "description": description,
+            "cover_color": cover_color,
+            "visibility": visibility,
+        })
+
+        if not deck_name or not subject:
+            flash("Deck name and subject are required.")
+            return render_template("create_deck.html", form_data=form_data)
+
+        db = get_db()
+        cursor = db.cursor()
+
+        # Check if the subject exists
+        cursor.execute(
+            "SELECT 1 FROM topics WHERE lower(subject) = lower(?)",
+            (subject,)
+        )
+        if cursor.fetchone():
+            flash("That subject already exists. Please choose a different subject name.")
+            return render_template("create_deck.html", form_data=form_data)
+
+        cursor.execute(
+            """
+            INSERT INTO topics (name, user_id, description, subject, cover_color, is_public)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (deck_name, session['user_id'], description or None, subject, cover_color, 1 if visibility == 'public' else 0)
+        )
+        
+        # Modifies the database
+        db.commit()
+
+        # Notification for now
+        flash(f"Deck '{deck_name}' created successfully.")
+        return redirect(url_for('decks'))
+
+    return render_template("create_deck.html", form_data=form_data)
     
 @app.route('/logout')
 def logout():

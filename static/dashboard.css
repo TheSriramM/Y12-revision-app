@@ -291,3 +291,158 @@ body{
     border-radius: 12px;
     border: 1px solid #e6e9ee;
 }
+
+.create-deck-container {
+    width: 85%;
+    max-width: 900px;
+    margin: 36px auto;
+}
+
+.create-deck-card {
+    background: white;
+    border-radius: 24px;
+    padding: 36px;
+    box-shadow: 0 14px 40px rgba(16, 24, 40, 0.08);
+    border: 1px solid #dde2e8;
+}
+
+.create-deck-header h1 {
+    margin: 0 0 8px 0;
+    font-size: 2rem;
+    color: #222;
+}
+
+.create-deck-header p {
+    margin: 0 0 24px 0;
+    color: #55606a;
+}
+
+.flash-messages {
+    margin-bottom: 18px;
+}
+
+.flash-message {
+    background: #eef6ff;
+    color: #14539a;
+    border: 1px solid #cfe6ff;
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+}
+
+.create-deck-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-section h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #222;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: #364152;
+    font-weight: 600;
+}
+
+.form-field input,
+.form-field textarea {
+    padding: 12px 14px;
+    border: 1px solid #d7dde5;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+/* Allows the field to resize vertically instead of horizontally which is for responsiveness */
+.form-field textarea {
+    resize: vertical;
+}
+
+.color-options,
+.visibility-options {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.color-option {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+}
+
+.color-option input {
+    display: none;
+}
+
+/* If the input has been clicked for the colout, the blue border appears */
+.color-option:has(input:checked) {
+    border-color: #2E90E5;
+}
+
+.color-swatch {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Colour options */
+.color-swatch.blue { 
+    background: #2E90E5; 
+}
+
+.color-swatch.green { 
+    background: #34A853; 
+}
+
+.color-swatch.yellow { 
+    background: #F4C542; 
+}
+.color-swatch.red {
+    background: #E74C3C; 
+}
+
+.color-swatch.purple { 
+    background: #8E44AD; 
+}
+
+.visibility-options label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #364152;
+    font-weight: 500;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-start;
+    margin-top: 8px;
+}
+
+.deck-subject {
+    margin: 6px 0 0 0;
+    color: #2E90E5;
+    font-size: 0.9rem;
+    font-weight: 600;
+}

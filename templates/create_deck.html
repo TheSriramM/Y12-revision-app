@@ -2,11 +2,87 @@
 
 {% block head %}
     <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
-    <script src="{{ url_for('static', filename='js/flashcards.js') }}"></script>
 {% endblock %}
 
 {% block content %}
-    <div class="create-deck-header">
-        
+    <div class="create-deck-container">
+
+        <div class="create-deck-card">
+
+            <div class="create-deck-header">
+                <h1>Create a New Deck</h1>
+                <p>Organise your flashcards into a deck.</p>
+            </div>
+
+            <!--Check if any messages/notifications need to be displayed and then style with css-->
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for message in messages %}
+                            <div class="flash-message">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <form method="post" action="{{ url_for('create_deck') }}" class="create-deck-form">
+                <div class="form-section">
+                    <h2>Deck Details</h2>
+
+                    <label class="form-field">
+                        <span>Deck Name</span>
+                        <input type="text" name="deck_name" required value="{{ form_data.deck_name }}">
+                    </label>
+
+                    <label class="form-field">
+                        <span>Subject</span>
+                        <input type="text" name="subject" placeholder="e.g. Chemistry" required value="{{ form_data.subject }}">
+                    </label>
+
+                    <label class="form-field">
+                        <span>Description (optional)</span>
+                        <textarea name="description" rows="3">{{ form_data.description }}</textarea>
+                    </label>
+
+                    <div class="form-field">
+                        <span>Cover Colour</span>
+
+                        <!--Display the colour options-->
+                        <!--Using american spelling for the code-->
+                        <div class="color-options">
+                            {% set colors = [('#2E90E5','blue'), ('#34A853','green'), ('#F4C542','yellow'), ('#E74C3C','red'), ('#8E44AD','purple')] %}
+                            {% for color, name in colors %}
+                                <label class="color-option">
+                                    <input type="radio" name="cover_color" value="{{ color }}" {% if form_data.cover_color == color %}checked{% endif %}>
+                                    <span class="color-swatch {{ name }}"></span>
+                                </label>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+
+                    <div class="form-field">
+                        <span>Visibility</span>
+                        <div class="visibility-options">
+                            <label>
+                                <input type="radio" name="visibility" value="private" {% if form_data.visibility != 'public' %}checked{% endif %}>
+                                Private
+                            </label>
+                            <label>
+                                <input type="radio" name="visibility" value="public" {% if form_data.visibility == 'public' %}checked{% endif %}>
+                                Public
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Create Deck</button>
+                    <a href="{{ url_for('decks') }}" class="btn-secondary">Cancel</a>
+                </div>
+            </form>
+
+        </div>
+
     </div>
 {% endblock %}
