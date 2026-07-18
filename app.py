@@ -426,6 +426,48 @@ def create_deck():
         return redirect(url_for('decks'))
 
     return render_template("create_deck.html", form_data=form_data)
+
+@app.route("/delete_card/<int:card_id>", methods=["POST"])
+def delete_card(card_id):
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute(
+        "SELECT topic_id FROM flashcards WHERE id = ?",
+        (card_id,)
+    )
+    card = cursor.fetchone()
+
+    if not card:
+        flash("Card not found.")
+        return redirect(url_for('decks'))
+
+    deck_id = card[0]
+
+    # Checking if this deck belongs to the specific user
+    cursor.execute(
+        "SELECT 1 FROM topics WHERE id = ? AND user_id = ?",
+        (deck_id, session['user_id'])
+    )
+
+    # If the user tries to access someone else's card
+    if not cursor.fetchone():
+        flash("You do not have permission to delete that card.")
+        return redirect(url_for('decks'))
+
+    cursor.execute(
+        "DELETE FROM flashcards WHERE id = ? AND topic_id = ?",
+        (card_id, deck_id)
+    )
+    db.commit()
+
+    # Next time you go to create a card, it will display this
+    flash("Card deleted successfully.")
+
+    return redirect(url_for('edit_deck', deck_id=deck_id))
     
 @app.route('/logout')
 def logout():

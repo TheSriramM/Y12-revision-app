@@ -29,13 +29,25 @@
                                 <strong>Question:</strong>
                                 <p>{{ card.question }}</p>
                             </div>
+
                             <div class="flashcard-section">
                                 <strong>Answer:</strong>
                                 <p>{{ card.answer }}</p>
                             </div>
+
                             <div class="flashcard-actions">
                                 <a href="#" class="btn-secondary">Edit</a>
-                                <a href="#" class="btn-secondary danger-btn">Delete</a>
+
+                                <!--The confirm() means a popup shows up to ensure the user actually wants to delete the card-->
+                                <form action="{{ url_for('delete_card', card_id=card['id']) }}"
+                                    method="POST"
+                                    onsubmit="return confirm('Are you sure you want to delete this card?');">
+
+                                    <button type="submit" class="btn-secondary danger-btn">
+                                        Delete
+                                    </button>
+
+                                </form>
                             </div>
                         </div>
                     {% endfor %}
