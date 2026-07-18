@@ -316,6 +316,106 @@ body{
     border: 1px solid #e6e9ee;
 }
 
+.add-card-page {
+    width: 85%;
+    max-width: 1000px;
+    margin: 32px auto 48px;
+}
+
+.add-card-card {
+    background: white;
+    border-radius: 24px;
+    padding: 36px 40px;
+    box-shadow: 0 14px 40px rgba(16, 24, 40, 0.08);
+    border: 1px solid #dde2e8;
+}
+
+.add-card-header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.add-card-header h1 {
+    margin: 0;
+    font-size: 2rem;
+    text-align: left;
+    color: #1f2937;
+}
+
+.back-link {
+    color: #2E90E5;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.add-card-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-group label {
+    font-weight: 700;
+    color: #233142;
+}
+
+.form-group textarea {
+    width: 100%;
+    border: 1px solid #d4dce6;
+    border-radius: 14px;
+    padding: 16px 18px;
+    font-size: 1rem;
+    font-family: inherit;
+    background: #fbfcfe;
+    min-height: 140px;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+.form-group textarea:focus {
+    outline: none;
+    border-color: #2E90E5;
+    box-shadow: 0 0 0 3px rgba(46, 144, 229, 0.12);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.flash-messages {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.flash-message {
+    background: #eef7ff;
+    color: #0b5fa5;
+    border: 1px solid #cde7ff;
+    border-radius: 12px;
+    padding: 12px 14px;
+}
+
 .create-deck-container {
     width: 85%;
     max-width: 900px;
@@ -498,6 +598,47 @@ body{
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
+}
+
+.flashcards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.flashcard-item {
+    border: 1px solid #e6e9ee;
+    border-radius: 14px;
+    padding: 16px;
+    background: #fafbfc;
+}
+
+.flashcard-section {
+    margin-bottom: 8px;
+}
+
+.flashcard-section p {
+    margin: 4px 0 0 0;
+    color: #364152;
+}
+
+.flashcard-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.empty-flashcards {
+    padding: 16px;
+    border: 1px dashed #cfd7e0;
+    border-radius: 12px;
+    text-align: center;
+    color: #55606a;
+    background: #fcfdff;
+}
+
+.required-star {
+    color: red;
 }
 
 .danger-btn {

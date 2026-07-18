@@ -290,6 +290,15 @@ def edit_deck(deck_id):
         flash("Deck not found.")
         return redirect(url_for('decks'))
 
+    cursor.execute(
+        "SELECT id, question, answer FROM flashcards WHERE topic_id = ?",
+        (deck_id,)
+    )
+    flashcards = [
+        {"id": row[0], "question": row[1], "answer": row[2]}
+        for row in cursor.fetchall()
+    ]
+
     form_data = {
         "deck_id": deck[0],
         "deck_name": deck[1],
@@ -299,7 +308,59 @@ def edit_deck(deck_id):
         "visibility": "public" if deck[5] else "private"
     }
 
-    return render_template("edit_deck.html", form_data=form_data)
+    return render_template("edit_deck.html", form_data=form_data, flashcards=flashcards)
+
+@app.route('/add_card/<int:deck_id>', methods=['GET', 'POST'])
+def add_card(deck_id):
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(
+        "SELECT id, name FROM topics WHERE id = ? AND user_id = ?",
+        (deck_id, session['user_id'])
+    )
+    deck = cursor.fetchone()
+
+    # Preventing user from error if they change the url manually
+    if not deck:
+        flash("Deck not found.")
+        return redirect(url_for('decks'))
+
+    form_data = {
+        "question": "",
+        "answer": ""
+    }
+
+    if request.method == 'POST':
+        question = request.form.get('question', '')
+        answer = request.form.get('answer', '')
+        action = request.form.get('action', 'save')
+
+        form_data.update({
+            "question": question,
+            "answer": answer,
+        })
+
+        # Database insertion
+        cursor.execute(
+            "INSERT INTO flashcards (topic_id, question, answer) VALUES (?, ?, ?)",
+            (deck_id, question, answer)
+        )
+        db.commit()
+
+        # Let the user know that the flashcard has been added
+        flash("Flashcard added successfully.")
+
+        # Reload the same page for the new card to be added
+        if action == 'save_add_another':
+            form_data = {"question": "", "answer": ""}
+            return render_template("add_card.html", deck={"id": deck[0], "name": deck[1]}, form_data=form_data)
+
+        return redirect(url_for('edit_deck', deck_id=deck_id))
+
+    return render_template("add_card.html", deck={"id": deck[0], "name": deck[1]}, form_data=form_data)
 
 @app.route('/create_deck', methods=['GET', 'POST'])
 def create_deck():

@@ -11,15 +11,40 @@
 
             <div class="deck-overview-title">
                 <h1>{{ form_data.deck_name }}</h1>
-                <p>{{ form_data.subject or 'No subject yet' }}</p>
+                <p>{{ form_data.subject }}</p>
             </div>
 
             <div class="deck-action-buttons">
                 <a href="#" class="btn-primary">▶ Study</a>
-                <a href="#" class="btn-secondary">+ Add Card</a>
+                <a href="{{ url_for('add_card', deck_id=form_data.deck_id) }}" class="btn-secondary">+ Add Card</a>
                 <a href="#" class="btn-secondary">✏ Edit Deck</a>
                 <a href="#" class="btn-secondary danger-btn">🗑 Delete</a>
             </div>
+
+            {% if flashcards and flashcards|length > 0 %}
+                <div class="flashcards-list">
+                    {% for card in flashcards %}
+                        <div class="flashcard-item">
+                            <div class="flashcard-section">
+                                <strong>Question:</strong>
+                                <p>{{ card.question }}</p>
+                            </div>
+                            <div class="flashcard-section">
+                                <strong>Answer:</strong>
+                                <p>{{ card.answer }}</p>
+                            </div>
+                            <div class="flashcard-actions">
+                                <a href="#" class="btn-secondary">Edit</a>
+                                <a href="#" class="btn-secondary danger-btn">Delete</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-flashcards">
+                    <p>This deck doesn't have any flashcards yet.</p>
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
