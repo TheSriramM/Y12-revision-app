@@ -468,6 +468,83 @@ def delete_card(card_id):
     flash("Card deleted successfully.")
 
     return redirect(url_for('edit_deck', deck_id=deck_id))
+
+@app.route('/edit_card/<int:card_id>', methods=['GET', 'POST'])
+def edit_card(card_id):
+
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    db = get_db()
+    cursor = db.cursor()
+
+    # Get the card and make sure it belongs to this user
+    cursor.execute("""
+        SELECT flashcards.id,
+               flashcards.question,
+               flashcards.answer,
+               topics.id,
+               topics.name
+        FROM flashcards
+        JOIN topics
+            ON flashcards.topic_id = topics.id
+        WHERE flashcards.id = ?
+        AND topics.user_id = ?
+    """, (card_id, session["user_id"]))
+
+    card = cursor.fetchone()
+
+    if not card:
+        flash("Flashcard not found.")
+        return redirect(url_for("decks"))
+
+    form_data = {
+        "question": card[1],
+        "answer": card[2]
+    }
+
+    if request.method == "POST":
+
+        question = request.form.get("question")
+        answer = request.form.get("answer")
+
+        if not question or not answer:
+            flash("Question and answer are required.")
+            return render_template(
+                "add_card.html",
+                deck={
+                    "id": card[3],
+                    "name": card[4]
+                },
+                form_data={"question": question, "answer": answer},
+                edit_mode=True
+            )
+
+        cursor.execute("""
+            UPDATE flashcards
+            SET question=?,
+                answer=?
+            WHERE id=?
+        """, (question, answer, card_id))
+
+        db.commit()
+
+        flash("Flashcard updated successfully.")
+
+        return redirect(url_for(
+            "edit_deck",
+            deck_id=card[3]
+        ))
+
+    return render_template(
+        "add_card.html",
+        deck={
+            "id": card[3],
+            "name": card[4]
+        },
+        form_data=form_data,
+        edit_mode=True
+    )
     
 @app.route('/logout')
 def logout():

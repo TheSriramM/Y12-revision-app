@@ -11,7 +11,14 @@
 
             <div class="add-card-header">
                 <a href="{{ url_for('edit_deck', deck_id=deck['id']) }}" class="back-link">← {{ deck['name'] }}</a>
-                <h1>Add Flashcard</h1>
+                <!--Checking if edit more or adding card mode-->
+                <h1>
+                    {% if edit_mode %}
+                        Edit Flashcard
+                    {% else %}
+                        Add Flashcard
+                    {% endif %}
+                </h1>
             </div>
 
             {% with messages = get_flashed_messages() %}
@@ -35,10 +42,25 @@
                     <textarea id="answer" name="answer" rows="5" required>{{ form_data.answer }}</textarea>
                 </div>
 
+                <!--Display only one button if the user is in edit mode.-->
                 <div class="form-actions">
-                    <button type="submit" name="action" value="save_add_another" class="btn-primary">Save & Add Another</button>
-                    <button type="submit" name="action" value="save" class="btn-primary">Save</button>
-                    <a href="{{ url_for('edit_deck', deck_id=deck['id']) }}" class="btn-secondary">Cancel</a>
+                    {% if edit_mode %}
+
+                        <button type="submit" class="btn-primary">
+                            Save Changes
+                        </button>
+
+                    {% else %}
+
+                        <button type="submit" name="action" value="save_add_another" class="btn-primary">
+                            Save & Add Another
+                        </button>
+
+                        <button type="submit" name="action" value="save" class="btn-primary">
+                            Save
+                        </button>
+
+                    {% endif %}
                 </div>
             </form>
             
