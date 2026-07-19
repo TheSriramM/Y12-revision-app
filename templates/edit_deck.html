@@ -15,7 +15,7 @@
             </div>
 
             <div class="deck-action-buttons">
-                <a href="#" class="btn-primary">▶ Study</a>
+                <a href="{{ url_for('study', deck_id=form_data.deck_id) }}" class="btn-primary">▶ Study</a>
                 <a href="{{ url_for('add_card', deck_id=form_data.deck_id) }}" class="btn-secondary">+ Add Card</a>
                 <a href="{{ url_for('update_deck', deck_id=form_data.deck_id) }}" class="btn-secondary">✏ Edit Deck</a>
 

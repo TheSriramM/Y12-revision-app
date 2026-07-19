@@ -646,6 +646,84 @@ def delete_deck(deck_id):
 
     flash("Deck deleted successfully.")
     return redirect(url_for("decks"))
+
+@app.route('/study/<int:deck_id>', methods=['GET', 'POST'])
+def study(deck_id):
+
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    db = get_db()
+    cursor = db.cursor()
+
+    # Check the deck belongs to the user
+    cursor.execute("""
+        SELECT id, name
+        FROM topics
+        WHERE id = ?
+        AND user_id = ?
+    """, (deck_id, session["user_id"]))
+
+    deck = cursor.fetchone()
+
+    if not deck:
+        flash("Deck not found.")
+        return redirect(url_for("decks"))
+
+    # Get all flashcards for this deck
+    cursor.execute("""
+        SELECT question, answer
+        FROM flashcards
+        WHERE topic_id = ?
+    """, (deck_id,))
+
+    flashcards = cursor.fetchall()
+
+    if len(flashcards) == 0:
+        flash("This deck doesn't have any flashcards.")
+        return redirect(url_for("edit_deck", deck_id=deck_id))
+
+    # Reset session when changing decks
+    if session.get("study_deck") != deck_id:
+        session["study_deck"] = deck_id
+        session["cur_index"] = 0
+        session["showing_answer"] = False
+
+    if request.method == "POST":
+
+        action = request.form.get("action")
+
+        if action == "flip":
+            session["showing_answer"] = not session["showing_answer"]
+
+        elif action == "next":
+
+            if session["cur_index"] < len(flashcards) - 1:
+                session["cur_index"] += 1
+
+            session["showing_answer"] = False
+
+        elif action == "prev":
+
+            if session["cur_index"] > 0:
+                session["cur_index"] -= 1
+
+            session["showing_answer"] = False
+
+    current_card = flashcards[session["cur_index"]]
+
+    if session["showing_answer"]:
+        card_text = current_card[1]
+    else:
+        card_text = current_card[0]
+
+    return render_template(
+        "study.html",
+        deck_name=deck[1],
+        card_text=card_text,
+        current_index=session["cur_index"],
+        total_cards=len(flashcards)
+    )
     
 @app.route('/logout')
 def logout():

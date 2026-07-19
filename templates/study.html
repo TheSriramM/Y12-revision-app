@@ -1,0 +1,74 @@
+{% extends "dashboard_base.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="flashcard-container">
+
+    <a href="{{ url_for('edit_deck', deck_id=session.study_deck) }}"
+       class="back-link">
+        ← {{ deck_name }}
+    </a>
+
+    <div class="flashcard-header">
+        <span>
+            Card {{ current_index + 1 }} of {{ total_cards }}
+        </span>
+    </div>
+
+    <form method="POST">
+
+        <button
+            class="flashcard"
+            type="submit"
+            name="action"
+            value="flip">
+
+            {{ card_text }}
+
+        </button>
+
+        <div class="controls">
+
+            <button
+                class="btn-secondary"
+                type="submit"
+                name="action"
+                value="prev">
+
+                ← Previous
+
+            </button>
+
+            <button
+                class="btn-primary"
+                type="submit"
+                name="action"
+                value="flip">
+
+                Flip
+
+            </button>
+
+            <button
+                class="btn-secondary"
+                type="submit"
+                name="action"
+                value="next">
+
+                Next →
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/flashcards.js') }}"></script>
+
+{% endblock %}

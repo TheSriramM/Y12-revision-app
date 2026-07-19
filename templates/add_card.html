@@ -21,16 +21,6 @@
                 </h1>
             </div>
 
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    <div class="flash-messages">
-                        {% for message in messages %}
-                            <div class="flash-message">{{ message }}</div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            {% endwith %}
-
             <form method="post" class="add-card-form">
                 <div class="form-group">
                     <label for="question">Question <span class="required-star">*</span></label>

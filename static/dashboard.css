@@ -401,21 +401,6 @@ body{
     margin-top: 8px;
 }
 
-.flash-messages {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.flash-message {
-    background: #eef7ff;
-    color: #0b5fa5;
-    border: 1px solid #cde7ff;
-    border-radius: 12px;
-    padding: 12px 14px;
-}
-
 .create-deck-container {
     width: 85%;
     max-width: 900px;
@@ -662,6 +647,51 @@ body{
     color: #2E90E5;
     font-size: 1rem;
     font-weight: 600;
+}
+
+.toast-container {
+
+    /* Ensures that the notification is fixed even when scrolling */
+    position: fixed;
+
+    /* Dimensions from top right corner */
+    top: 20px;
+    right: 20px;
+
+    z-index: 9999;
+
+    /* Neatly arrange notifications */
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.toast-message {
+    background: #2E90E5;
+    color: white;
+
+    padding: 14px 20px;
+    border-radius: 10px;
+
+    font-weight: 500;
+
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+
+    animation: slideIn .3s ease;
+}
+
+@keyframes slideIn {
+
+    from {
+        transform: translateX(50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
 }
 
 /* Center the text on the buttons */

@@ -9,6 +9,18 @@
 </head>
 <body>
 
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class="toast-container">
+            {% for message in messages %}
+                <div class="toast-message">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
+
     <header>
         <h1 class="logo">Quizcards</h1>
 
@@ -27,7 +39,8 @@
             </div>
         </nav>
     </header>
-    
+
+    <script src="{{ url_for('static', filename='js/dashboard_base.js') }}" defer></script>
     {% block content %}{% endblock %}
 
 </body>
