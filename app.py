@@ -356,11 +356,11 @@ def add_card(deck_id):
         # Reload the same page for the new card to be added
         if action == 'save_add_another':
             form_data = {"question": "", "answer": ""}
-            return render_template("add_card.html", deck={"id": deck[0], "name": deck[1]}, form_data=form_data)
+            return render_template("add_card.html", deck={"id": deck[0], "name": deck[1]}, form_data=form_data, edit_mode=False)
 
         return redirect(url_for('edit_deck', deck_id=deck_id))
 
-    return render_template("add_card.html", deck={"id": deck[0], "name": deck[1]}, form_data=form_data)
+    return render_template("add_card.html", deck={"id": deck[0], "name": deck[1]}, form_data=form_data, edit_mode=False)
 
 @app.route('/create_deck', methods=['GET', 'POST'])
 def create_deck():
@@ -479,6 +479,7 @@ def edit_card(card_id):
     cursor = db.cursor()
 
     # Get the card and make sure it belongs to this user
+    # Since the flashcard table does not contain the user id, you can use join to get the corresponding user id from the topics table
     cursor.execute("""
         SELECT flashcards.id,
                flashcards.question,
@@ -542,6 +543,89 @@ def edit_card(card_id):
             "id": card[3],
             "name": card[4]
         },
+        form_data=form_data,
+        edit_mode=True
+    )
+
+@app.route('/update_deck/<int:deck_id>', methods=['GET', 'POST'])
+def update_deck(deck_id):
+
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute("""
+        SELECT id, name, description, subject, cover_color, is_public
+        FROM topics
+        WHERE id = ?
+        AND user_id = ?
+    """, (deck_id, session["user_id"]))
+
+    deck = cursor.fetchone()
+
+    if not deck:
+        flash("Deck not found.")
+        return redirect(url_for("decks"))
+
+    form_data = {
+        "deck_name": deck[1],
+        "subject": deck[3],
+        "description": deck[2] or "",
+        "cover_color": deck[4] or "#2E90E5",
+        "visibility": "public" if deck[5] else "private"
+    }
+
+    if request.method == "POST":
+
+        deck_name = request.form.get("deck_name", "").strip()
+        subject = request.form.get("subject", "").strip()
+        description = request.form.get("description", "").strip()
+        cover_color = request.form.get("cover_color")
+        visibility = request.form.get("visibility")
+
+        form_data.update({
+            "deck_name": deck_name,
+            "subject": subject,
+            "description": description,
+            "cover_color": cover_color,
+            "visibility": visibility
+        })
+
+        if not deck_name or not subject:
+            flash("Deck name and subject are required.")
+            return render_template(
+                "create_deck.html",
+                form_data=form_data,
+                edit_mode=True
+            )
+
+        # Update the data for the deck
+        cursor.execute("""
+            UPDATE topics
+            SET name=?,
+                subject=?,
+                description=?,
+                cover_color=?,
+                is_public=?
+            WHERE id=?
+        """, (
+            deck_name,
+            subject,
+            description or None,
+            cover_color,
+            1 if visibility == "public" else 0,
+            deck_id
+        ))
+
+        db.commit()
+
+        flash("Deck updated successfully.")
+        return redirect(url_for("edit_deck", deck_id=deck_id))
+
+    return render_template(
+        "create_deck.html",
         form_data=form_data,
         edit_mode=True
     )

@@ -10,8 +10,21 @@
         <div class="create-deck-card">
 
             <div class="create-deck-header">
-                <h1>Create a New Deck</h1>
-                <p>Organise your flashcards into a deck.</p>
+                <h1>
+                    {% if edit_mode %}
+                        Edit Deck
+                    {% else %}
+                        Create a New Deck
+                    {% endif %}
+                </h1>
+
+                <p>
+                    {% if edit_mode %}
+                        Update your deck details.
+                    {% else %}
+                        Organise your flashcards into a deck.
+                    {% endif %}
+                </p>
             </div>
 
             <!--Check if any messages/notifications need to be displayed and then style with css-->
@@ -25,7 +38,7 @@
                 {% endif %}
             {% endwith %}
 
-            <form method="post" action="{{ url_for('create_deck') }}" class="create-deck-form">
+            <form method="post" class="create-deck-form">
                 <div class="form-section">
                     <h2>Deck Details</h2>
 
@@ -77,8 +90,25 @@
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn-primary">Create Deck</button>
-                    <a href="{{ url_for('decks') }}" class="btn-secondary">Cancel</a>
+                    <button type="submit" class="btn-primary">
+                        {% if edit_mode %}
+                            Save Changes
+                        {% else %}
+                            Create Deck
+                        {% endif %}
+                    </button>
+
+                    <!--Route to decks.html if a new deck is being created-->
+                    <!--Route to edit_deck.html if a deck is being edited-->
+                    <a href="
+                        {% if edit_mode %}
+                            {{ url_for('edit_deck', deck_id=request.view_args['deck_id']) }}
+                        {% else %}
+                            {{ url_for('decks') }}
+                        {% endif %}
+                        " class="btn-secondary">
+                            Cancel
+                    </a>
                 </div>
             </form>
 
