@@ -435,6 +435,7 @@ body{
     font-size: 2rem;
     color: #222;
     font-weight: 500;
+    padding-top: 20px;
 }
 
 .create-deck-header p {

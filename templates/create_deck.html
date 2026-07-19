@@ -9,6 +9,11 @@
 
         <div class="create-deck-card">
 
+            <a href="{{ url_for('decks') }}" class="back-link">
+                ← Back to My Decks
+            </a>
+
+
             <div class="create-deck-header">
                 <h1>
                     {% if edit_mode %}
@@ -100,13 +105,12 @@
 
                     <!--Route to decks.html if a new deck is being created-->
                     <!--Route to edit_deck.html if a deck is being edited-->
-                    <a href="
-                        {% if edit_mode %}
+                    <a href="{% if edit_mode %}
                             {{ url_for('edit_deck', deck_id=request.view_args['deck_id']) }}
                         {% else %}
                             {{ url_for('decks') }}
-                        {% endif %}
-                        " class="btn-secondary">
+                        {% endif %}" 
+                        class="btn-secondary">
                             Cancel
                     </a>
                 </div>
