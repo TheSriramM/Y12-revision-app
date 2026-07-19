@@ -401,15 +401,6 @@ def create_deck():
         db = get_db()
         cursor = db.cursor()
 
-        # Check if the subject exists
-        cursor.execute(
-            "SELECT 1 FROM topics WHERE lower(subject) = lower(?)",
-            (subject,)
-        )
-        if cursor.fetchone():
-            flash("That subject already exists. Please choose a different subject name.")
-            return render_template("create_deck.html", form_data=form_data)
-
         cursor.execute(
             """
             INSERT INTO topics (name, user_id, description, subject, cover_color, is_public)
