@@ -45,6 +45,8 @@ def get_db():
     db = getattr(g, '_database', None)
     if db is None:
         db = g._database = sqlite3.connect(DATABASE)
+    
+    db.execute("PRAGMA foreign_keys = ON")
     return db
 
 @app.teardown_appcontext
@@ -620,6 +622,30 @@ def update_deck(deck_id):
         form_data=form_data,
         edit_mode=True
     )
+
+@app.route('/delete_deck/<int:deck_id>', methods=['POST'])
+def delete_deck(deck_id):
+
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    db = get_db()
+    cursor = db.cursor()
+
+    # Because I have ON CASCADE DELETE in the database scheme for the flashcards table, all the flashcards that belong to the topic that is being deleted will be deleted
+    cursor.execute(
+        """
+        DELETE FROM topics
+        WHERE id = ?
+        AND user_id = ?
+        """,
+        (deck_id, session["user_id"])
+    )
+
+    db.commit()
+
+    flash("Deck deleted successfully.")
+    return redirect(url_for("decks"))
     
 @app.route('/logout')
 def logout():

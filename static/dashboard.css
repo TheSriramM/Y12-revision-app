@@ -600,6 +600,11 @@ body{
     gap: 12px;
 }
 
+.deck-action-buttons form {
+    margin: 0;
+    display: inline-flex;
+}
+
 .flashcards-list {
     display: flex;
     flex-direction: column;
