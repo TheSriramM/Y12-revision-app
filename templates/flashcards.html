@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='flashcards.css') }}">
+{% endblock %}
+
 {% block content %}
 
 <h1>Level 2 Chemistry</h1>
