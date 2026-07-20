@@ -186,7 +186,7 @@ body{
 
 /* Primary button used in several places */
 .btn-primary {
-    background: linear-gradient(90deg, #2E90E5 0%, #1e5aa8 100%);
+    background:#2E90E5;
     color: white;
     padding: 20px 27px;
     border-radius: 12px;

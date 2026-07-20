@@ -86,8 +86,6 @@ main, .content {
 }
 
 .btn-secondary:hover {
-    background: #2d8fe3;
-    color: white;
     transform: translateY(-2px);
 }
 
