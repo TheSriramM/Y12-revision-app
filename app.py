@@ -45,6 +45,8 @@ def get_db():
     db = getattr(g, '_database', None)
     if db is None:
         db = g._database = sqlite3.connect(DATABASE)
+        # Allows for tuples to be accessed by column name as well as indices
+        db.row_factory = sqlite3.Row
     
     db.execute("PRAGMA foreign_keys = ON")
     return db
@@ -712,14 +714,26 @@ def study(deck_id):
 
     current_card = flashcards[session["cur_index"]]
 
-    if session["showing_answer"]:
-        card_text = current_card[1]
-    else:
-        card_text = current_card[0]
+    card_text = (
+        current_card["answer"]
+        if session["showing_answer"]
+        else current_card["question"]
+    )
+
+    # Check if data is needed for JS (xmlhttp REQUEST)
+    # Then return the json containing the needed data
+    # This is done instead of changing pages to ensure smooth experience
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return jsonify({
+            "card_text": card_text,
+            "current_index": session["cur_index"],
+            "total_cards": len(flashcards)
+        })
 
     return render_template(
         "study.html",
-        deck_name=deck[1],
+        deck_id=deck_id,
+        deck_name=deck["name"],
         card_text=card_text,
         current_index=session["cur_index"],
         total_cards=len(flashcards)

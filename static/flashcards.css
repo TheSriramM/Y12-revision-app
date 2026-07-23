@@ -283,9 +283,9 @@
 }
 
 .flashcard.flip-out {
-    animation: flip-out 0.3s ease-in-out forwards;
+    animation: flip-out 0.2s ease-in-out forwards;
 }
 
 .flashcard.flip-in {
-    animation: flip-in 0.3s ease-in-out forwards;
+    animation: flip-in 0.2s ease-in-out forwards;
 }

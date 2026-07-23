@@ -9,66 +9,50 @@
 
 <div class="flashcard-container">
 
-    <a href="{{ url_for('edit_deck', deck_id=session.study_deck) }}"
-       class="back-link">
+    <a href="{{ url_for('edit_deck', deck_id=deck_id) }}" class="back-link">
         ← {{ deck_name }}
     </a>
 
     <div class="flashcard-header">
-        <span>
+        <span id="card-counter">
             Card {{ current_index + 1 }} of {{ total_cards }}
         </span>
     </div>
 
-    <form method="POST">
+    <button
+        id="flashcard"
+        class="flashcard"
+        data-deck="{{ deck_id }}"
+        data-index="{{ current_index }}"
+        data-total="{{ total_cards }}"
+    >
+        <span id="card-text">{{ card_text }}</span>
+    </button>
+
+    <div class="controls">
 
         <button
-            class="flashcard"
-            type="submit"
-            name="action"
-            value="flip">
-
-            {{ card_text }}
-
+            id="prev-btn"
+            class="btn-secondary"
+            type="button">
+            ← Previous
         </button>
 
-        <div class="controls">
+        <button
+            id="flip-btn"
+            class="btn-primary"
+            type="button">
+            Flip
+        </button>
 
-            <button
-                class="btn-secondary"
-                type="submit"
-                name="action"
-                value="prev"
-                {% if current_index == 0 %}disabled{% endif %}>
+        <button
+            id="next-btn"
+            class="btn-secondary"
+            type="button">
+            Next →
+        </button>
 
-                ← Previous
-
-            </button>
-
-            <button
-                class="btn-primary"
-                type="submit"
-                name="action"
-                value="flip">
-
-                Flip
-
-            </button>
-
-            <button
-                class="btn-secondary"
-                type="submit"
-                name="action"
-                value="next"
-                {% if current_index == total_cards - 1 %}disabled{% endif %}>
-
-                Next →
-
-            </button>
-
-        </div>
-
-    </form>
+    </div>
 
 </div>
 

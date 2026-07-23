@@ -5,11 +5,21 @@ const nextBtn = document.getElementById('next-btn');
 const flipBtn = document.getElementById('flip-btn');
 const counterElement = document.getElementById('card-counter');
 
+// Initialising buttons
+document.addEventListener('DOMContentLoaded', () => {
+    const currentIndex = parseInt(cardElement.dataset.index);
+    const totalCards = parseInt(cardElement.dataset.total);
+    
+    prevBtn.disabled = currentIndex === 0;
+    nextBtn.disabled = currentIndex === totalCards - 1;
+});
+
+// This function is triggered when the user clicks one of the action buttons
 async function sendAction(action) {
     try {
         // This data (which button the user clicked) is sent through the POST method
         // It contains the action header which Flask uses
-        const response = await fetch('/flashcards', {
+        const response = await fetch(window.location.pathname, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -49,28 +59,18 @@ async function sendAction(action) {
     }
 }
 
-flipBtn.addEventListener('click', (e) => {
+flipBtn.addEventListener("click", () => {
     // When the user clicks the flip button on the screen
     // The flip animation is played
-    e.preventDefault();
-    sendAction('flip');
+    sendAction("flip");
 });
 
-prevBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    if (!prevBtn.disabled) sendAction('prev');
+prevBtn.addEventListener("click", () => {
+    if (!prevBtn.disabled)
+        sendAction("prev");
 });
 
-nextBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    if (!nextBtn.disabled) sendAction('next');
-});
-
-// Initialising buttons
-document.addEventListener('DOMContentLoaded', () => {
-    const currentIndex = parseInt(cardElement.dataset.index);
-    const totalCards = parseInt(cardElement.dataset.total);
-    
-    prevBtn.disabled = currentIndex === 0;
-    nextBtn.disabled = currentIndex === totalCards - 1;
+nextBtn.addEventListener("click", () => {
+    if (!nextBtn.disabled)
+        sendAction("next");
 });
