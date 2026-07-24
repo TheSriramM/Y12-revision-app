@@ -3,6 +3,10 @@ body{
     font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
+html {
+    overflow-y: scroll;
+}
+
 .logo{
     text-align:center;
     font-size:3rem;
@@ -13,7 +17,7 @@ body{
 .navbar{
     width:85%;
     max-width:1300px;
-    margin:auto;
+    margin: 24px auto;
     background:#2E90E5;
     border-radius:20px;
 
