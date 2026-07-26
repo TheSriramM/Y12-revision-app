@@ -11,6 +11,13 @@ h2 {
     color: #222;
 }
 
+.logo{
+    text-align:center;
+    font-size:3rem;
+    margin-top:30px;
+    margin-bottom:30px;
+}
+
 .feature-card p {
     color: #55606a;
     line-height: 1.6;
@@ -206,7 +213,7 @@ main, .content {
 
 .nav-left{
     display:flex;
-    gap:40px;
+    gap:45px;
 }
 
 .nav-left a{
