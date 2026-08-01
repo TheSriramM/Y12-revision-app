@@ -260,7 +260,7 @@ html {
     border-radius: 14px;
     padding: 18px;
     box-shadow: 0 8px 20px rgba(16,24,40,0.06);
-    border: 1px solid #eceff3;
+    border: 2px solid var(--deck-color, #2E90E5);
     display: flex;
     flex-direction: column;
     justify-content: space-between;

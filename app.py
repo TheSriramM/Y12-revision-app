@@ -260,7 +260,7 @@ def decks():
     cursor = db.cursor()
 
     cursor.execute(
-        "SELECT id, name, description, subject FROM topics WHERE user_id = ?",
+        "SELECT id, name, description, subject, cover_color FROM topics WHERE user_id = ?",
         (session['user_id'],)
     )
     rows = cursor.fetchall()
@@ -270,7 +270,8 @@ def decks():
             "id": topic[0],
             "name": topic[1],
             "description": topic[2] or "",
-            "subject": topic[3] or ""
+            "subject": topic[3] or "",
+            "cover_color": topic[4] or "#2E90E5"
         }
         for topic in rows
     ]

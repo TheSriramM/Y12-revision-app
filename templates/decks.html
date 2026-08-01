@@ -21,7 +21,8 @@
             <div class="decks-grid">
                 {% for deck in decks %}
 
-                    <div class="deck-card">
+                    <!--Pass the colour that the user selected-->
+                    <div class="deck-card" style="--deck-color: {{ deck.cover_color or '#2E90E5' }};">
                         <div class="deck-card-body">
                             <h3 class="deck-title">{{ deck.name }}</h3>
                             <p class="deck-desc">{{ deck.description or "" }}</p>
