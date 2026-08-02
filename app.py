@@ -675,10 +675,29 @@ def study(deck_id):
 
     # Get all flashcards for this deck
     cursor.execute("""
-        SELECT question, answer
+        SELECT id, question, answer
         FROM flashcards
         WHERE topic_id = ?
     """, (deck_id,))
+
+    # Start a new study session if there is not one already
+    if session.get("study_session_deck") != deck_id:
+
+        session["study_deck"] = deck_id
+        session["cur_index"] = 0
+        session["showing_answer"] = False
+
+        cursor.execute("""
+            INSERT INTO study_sessions
+            (user_id, deck_id, cards_reviewed, started_at)
+            VALUES (?, ?, 0, CURRENT_TIMESTAMP)
+        """, (session["user_id"], deck_id))
+
+        db.commit()
+
+        # Get the sesion id and the deck that is currently being studied
+        session["study_session_id"] = cursor.lastrowid
+        session["study_session_deck"] = deck_id
 
     flashcards = cursor.fetchall()
 
@@ -706,6 +725,25 @@ def study(deck_id):
 
             session["showing_answer"] = False
 
+            # Make sure user doesn't purposefully increase cards reviewed by spamming next and prev
+            # This is done by keeping track of the card numbers of the cards that have been reviewed
+            current_card_id = flashcards[session["cur_index"]]["id"]
+            reviewed = session.get("reviewed_cards", [])
+
+            # If the current card has not been reviewed then update the cards reviewed in the database
+            if current_card_id not in reviewed:
+
+                reviewed.append(current_card_id)
+                session["reviewed_cards"] = reviewed
+
+                cursor.execute("""
+                    UPDATE study_sessions
+                    SET cards_reviewed = cards_reviewed + 1
+                    WHERE session_id = ?
+                """, (session["study_session_id"],))
+
+                db.commit()
+
         elif action == "prev":
 
             if session["cur_index"] > 0:
@@ -713,6 +751,32 @@ def study(deck_id):
 
             session["showing_answer"] = False
 
+        elif action == "finish":
+
+            if session.get("study_session_id") is not None:            
+                # Set completed = 1 and finish the study session
+                cursor.execute("""
+                    UPDATE study_sessions
+                    SET ended_at = CURRENT_TIMESTAMP,
+                        completed = 1
+                    WHERE session_id = ?
+                """, (session["study_session_id"],))
+
+                db.commit()
+
+            # Removing the old session info
+            session.pop("study_session_id", None)
+            session.pop("study_session_deck", None)
+            session.pop("reviewed_cards", None)
+
+            flash("Study session complete!")
+
+            # Link to the finish button code in the JS by sending the JSON
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                return jsonify({"redirect": url_for("decks")})
+
+            return redirect(url_for("decks"))
+        
     current_card = flashcards[session["cur_index"]]
 
     card_text = (

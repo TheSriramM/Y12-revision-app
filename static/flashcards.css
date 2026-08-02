@@ -44,6 +44,26 @@
     width: 100%;
 }
 
+.finish-actions {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.finish-btn {
+    min-width: 180px;
+    padding: 18px 22px;
+    border-radius: 999px;
+    background-color: #2E90E5;
+    box-shadow: 0 10px 24px rgba(46, 144, 229, 0.25);
+    font-size: 1rem;
+}
+
+.finish-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(46, 144, 229, 0.3);
+}
+
 .flashcard-header {
     margin-bottom: 20px;
     font-size: 14px;
