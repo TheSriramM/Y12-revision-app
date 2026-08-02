@@ -249,7 +249,12 @@ def dashboard():
     
     deck_count = cursor.fetchone()[0]
 
-    return render_template("dashboard.html", username=session['username'], deck_count=deck_count)
+    # Query the number of reviews for the user
+    cursor.execute("SELECT COUNT(*) FROM study_sessions;")
+    reviews = cursor.fetchone()[0]
+
+
+    return render_template("dashboard.html", username=session['username'], deck_count=deck_count, reviews=reviews)
 
 @app.route('/decks')
 def decks():
