@@ -362,8 +362,20 @@ def dashboard():
     cursor.execute("SELECT COUNT(*) FROM study_sessions;")
     reviews = cursor.fetchone()[0]
 
+    # The study dates
+    cursor.execute("""
+        SELECT DISTINCT DATE(started_at) AS study_day
+        FROM study_sessions
+        WHERE user_id = ?
+        ORDER BY study_day
+    """, (session['user_id'],))
 
-    return render_template("dashboard.html", username=session['username'], deck_count=deck_count, reviews=reviews)
+    # Process the data into datetime format
+    study_dates = [datetime.strptime(row[0], "%Y-%m-%d").date() for row in cursor.fetchall()]
+
+    streak = calculate_streak(study_dates)
+
+    return render_template("dashboard.html", username=session['username'], deck_count=deck_count, reviews=reviews, streak=streak)
 
 @app.route('/decks')
 def decks():
