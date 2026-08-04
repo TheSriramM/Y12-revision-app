@@ -1,5 +1,6 @@
 from flask import Flask, session, request, render_template, redirect, url_for, g, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, timedelta
 import sqlite3
 
 app = Flask(
@@ -50,6 +51,114 @@ def get_db():
     
     db.execute("PRAGMA foreign_keys = ON")
     return db
+
+# The process of how fcard reviews work and how they are counted
+# This is used in the study function
+def mark_reviewed_card(cursor, session_data, session_id, card_id, reviewed_cards):
+    if card_id in reviewed_cards:
+        return False
+
+    reviewed_cards.append(card_id)
+    session_data["reviewed_cards"] = reviewed_cards
+
+    cursor.execute("""
+        UPDATE study_sessions
+        SET cards_reviewed = cards_reviewed + 1
+        WHERE session_id = ?
+    """, (session_id,))
+
+    return True
+
+
+def format_study_time(value):
+    if not value:
+        return "No study sessions yet"
+
+    # If the value returned by SQL is a string, convert it into datetime format
+    if isinstance(value, str):
+        # Change every space into a capital t which is the standard format needed for the fromisoformat function
+        value = datetime.fromisoformat(value.replace(" ", "T"))
+
+    # Get the date today with .date()
+    today = datetime.now().date()
+    # If last reviewed is today
+    if value.date() == today:
+        day_label = "Today"
+
+    # One day ago
+    elif value.date() == today - timedelta(days=1):
+        day_label = "Yesterday"
+
+    # Any other day
+    else:
+        day_label = value.strftime("%d %b")
+
+    # Format hour from 24 hour format into 12 hour format
+    hour = value.hour % 12 or 12
+    minute = value.strftime("%M")
+    suffix = "AM" if value.hour < 12 else "PM"
+
+    # Return the data in a user friendly format
+    # Example: Today at 8:35 PM
+    return f"{day_label} at {hour}:{minute} {suffix}"
+
+# Similar to the above function except just return the date without the time
+def format_recent_label(value):
+    if not value:
+        return "Recent"
+
+    if isinstance(value, str):
+        value = datetime.fromisoformat(value.replace(" ", "T"))
+
+    today = datetime.now().date()
+    if value.date() == today:
+        return "Today"
+    if value.date() == today - timedelta(days=1):
+        return "Yesterday"
+    return value.strftime("%d %b")
+
+# Calculate streaks
+def calculate_streak(study_dates):
+    if not study_dates:
+        return 0
+
+    study_set = set(study_dates)
+
+    current = datetime.now().date()
+    streak = 0
+
+    if current not in study_set:
+        if current - timedelta(days=1) in study_set:
+            current = current - timedelta(days=1)
+        else:
+            return 0
+    else:
+        current = current
+
+    while current in study_set:
+        streak += 1
+        current -= timedelta(days=1)
+
+    return streak
+
+# Find the longest ever streak
+def calculate_longest_streak(study_dates):
+    if not study_dates:
+        return 0
+
+    ordered_dates = sorted(study_dates)
+    longest = 1
+    current_run = 1
+
+    # Find the longest ever streak
+    for index in range(1, len(ordered_dates)):
+        if ordered_dates[index] == ordered_dates[index - 1] + timedelta(days=1):
+            current_run += 1
+            longest = max(longest, current_run)
+        else:
+            current_run = 1
+
+    return longest
 
 @app.teardown_appcontext
 def close_connection(exception):
@@ -723,6 +832,13 @@ def study(deck_id):
         if action == "flip":
             session["showing_answer"] = not session["showing_answer"]
 
+            if len(flashcards) == 1 and session.get("study_session_id") is not None:
+                current_card_id = flashcards[session["cur_index"]]["id"]
+                reviewed = session.get("reviewed_cards", [])
+
+                if mark_reviewed_card(cursor, session, session["study_session_id"], current_card_id, reviewed):
+                    db.commit()
+
         elif action == "next":
 
             if session["cur_index"] < len(flashcards) - 1:
@@ -736,17 +852,7 @@ def study(deck_id):
             reviewed = session.get("reviewed_cards", [])
 
             # If the current card has not been reviewed then update the cards reviewed in the database
-            if current_card_id not in reviewed:
-
-                reviewed.append(current_card_id)
-                session["reviewed_cards"] = reviewed
-
-                cursor.execute("""
-                    UPDATE study_sessions
-                    SET cards_reviewed = cards_reviewed + 1
-                    WHERE session_id = ?
-                """, (session["study_session_id"],))
-
+            if mark_reviewed_card(cursor, session, session["study_session_id"], current_card_id, reviewed):
                 db.commit()
 
         elif action == "prev":
@@ -757,6 +863,13 @@ def study(deck_id):
             session["showing_answer"] = False
 
         elif action == "finish":
+
+            if len(flashcards) == 1 and session.get("study_session_id") is not None:
+                current_card_id = flashcards[session["cur_index"]]["id"]
+                reviewed = session.get("reviewed_cards", [])
+
+                if mark_reviewed_card(cursor, session, session["study_session_id"], current_card_id, reviewed):
+                    db.commit()
 
             if session.get("study_session_id") is not None:            
                 # Set completed = 1 and finish the study session
@@ -807,6 +920,126 @@ def study(deck_id):
         card_text=card_text,
         current_index=session["cur_index"],
         total_cards=len(flashcards)
+    )
+
+@app.route('/progress')
+def progress():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    db = get_db()
+    cursor = db.cursor()
+
+    # Need to execute queries to get progress stats
+
+    # Number of decks
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM topics
+        WHERE user_id = ?
+    """, (session['user_id'],))
+    deck_count = cursor.fetchone()[0]
+
+    # Number of flashcards
+    # Join ensures there is a match between the flashcards id and the topic id
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM flashcards
+        JOIN topics ON flashcards.topic_id = topics.id
+        WHERE topics.user_id = ?
+    """, (session['user_id'],))
+    flashcard_count = cursor.fetchone()[0]
+
+    # Number of reviews
+    # Coalesce ensures that no null is received as a result and if so, zero is given as the output
+    cursor.execute("""
+        SELECT COALESCE(SUM(cards_reviewed), 0)
+        FROM study_sessions
+        WHERE user_id = ? AND completed = 1
+    """, (session['user_id'],))
+    reviews = cursor.fetchone()[0]
+
+    # Number of study sessions
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM study_sessions
+        WHERE user_id = ?
+    """, (session['user_id'],))
+    study_sessions = cursor.fetchone()[0]
+
+    # The study dates
+    cursor.execute("""
+        SELECT DISTINCT DATE(started_at) AS study_day
+        FROM study_sessions
+        WHERE user_id = ?
+        ORDER BY study_day
+    """, (session['user_id'],))
+
+    # Process the data into datetime format
+    study_dates = [datetime.strptime(row[0], "%Y-%m-%d").date() for row in cursor.fetchall()]
+
+    # Get the latest time the user studied
+    cursor.execute("""
+        SELECT started_at
+        FROM study_sessions
+        WHERE user_id = ?
+        ORDER BY started_at DESC
+        LIMIT 1
+    """, (session['user_id'],))
+
+    # Get JUST the latest time the user studied
+    last_study_row = cursor.fetchone()
+    last_studied = format_study_time(last_study_row[0]) if last_study_row and last_study_row[0] else "No study sessions yet"
+
+    # Finds the deck which the user has reviewed the most
+    # 3 most studied decks
+    cursor.execute("""
+        SELECT topics.name, COALESCE(SUM(study_sessions.cards_reviewed), 0) AS review_count
+        FROM study_sessions
+        JOIN topics ON study_sessions.deck_id = topics.id
+        WHERE study_sessions.user_id = ?
+        GROUP BY topics.id, topics.name
+        ORDER BY review_count DESC, topics.name ASC
+        LIMIT 3
+    """, (session['user_id'],))
+
+    # Format the data
+    top_decks = [
+        {"name": row[0], "reviews": row[1]}
+        for row in cursor.fetchall()
+    ]
+
+    # Get the recent sessions
+    cursor.execute("""
+        SELECT study_sessions.started_at, topics.name, study_sessions.cards_reviewed
+        FROM study_sessions
+        JOIN topics ON study_sessions.deck_id = topics.id
+        WHERE study_sessions.user_id = ?
+        ORDER BY study_sessions.started_at DESC
+        LIMIT 3
+    """, (session['user_id'],))
+
+    # Format the data
+    recent_sessions = [
+        {
+            "date_label": format_recent_label(row[0]),
+            "deck_name": row[1],
+            "cards_reviewed": row[2] or 0
+        }
+        for row in cursor.fetchall()
+    ]
+
+    return render_template(
+        "progress.html",
+        deck_count=deck_count,
+        flashcard_count=flashcard_count,
+        reviews=reviews,
+        study_sessions=study_sessions,
+        streak=calculate_streak(study_dates),
+        longest_streak=calculate_longest_streak(study_dates),
+        last_studied=last_studied,
+        top_decks=top_decks,
+        recent_sessions=recent_sessions,
     )
     
 @app.route('/logout')
