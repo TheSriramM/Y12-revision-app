@@ -270,57 +270,44 @@ html {
     font-weight: 700;
 }
 
-.progress-list {
+.progress-list,
+.deck-rankings {
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 14px;
 }
 
-.progress-list li {
+.progress-list li,
+.deck-rankings li {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 12px 0;
+    gap: 12px;
     border-bottom: 1px solid #eef2f7;
 }
 
-/* li:last-child targets a list item (<li>) if it is the last child in its parent container*/
-.progress-list li:last-child {
+.progress-list li:last-child,
+.deck-rankings li:last-child {
     border-bottom: none;
 }
 
-.list-title {
+.list-title,
+.deck-name {
     color: #55606a;
     font-weight: 600;
 }
 
-.list-value {
+.list-value,
+.deck-reviews {
     color: #1f2937;
     font-weight: 700;
 }
 
 .deck-rankings {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding-left: 18px;
     margin: 0;
-}
-
-.deck-rankings li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 0;
-    border-bottom: 1px solid #eef2f7;
-}
-
-.deck-rankings li:last-child {
-    border-bottom: none;
 }
 
 .deck-name {
