@@ -1053,6 +1053,59 @@ def progress():
         top_decks=top_decks,
         recent_sessions=recent_sessions,
     )
+
+@app.route('/profile')
+def profile():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    db = get_db()
+    cursor = db.cursor()
+
+    # Get the user's email
+    cursor.execute("""
+        SELECT email
+        FROM users
+        WHERE id = ?
+    """, (session['user_id'],))
+    user_row = cursor.fetchone()
+    email = user_row['email'] if user_row else "No email available"
+
+    # Get the number of decks
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM topics
+        WHERE user_id = ?
+    """, (session['user_id'],))
+    deck_count = cursor.fetchone()[0]
+
+    # Get the number of flashcards
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM flashcards
+        JOIN topics ON flashcards.topic_id = topics.id
+        WHERE topics.user_id = ?
+    """, (session['user_id'],))
+    flashcard_count = cursor.fetchone()[0]
+
+    # Get the current streak
+    cursor.execute("""
+        SELECT DISTINCT DATE(started_at) AS study_day
+        FROM study_sessions
+        WHERE user_id = ?
+        ORDER BY study_day
+    """, (session['user_id'],))
+    study_dates = [datetime.strptime(row[0], "%Y-%m-%d").date() for row in cursor.fetchall()]
+    streak = calculate_streak(study_dates)
+
+    return render_template(
+        "profile.html",
+        username=session['username'],
+        email=email,
+        deck_count=deck_count,
+        flashcard_count=flashcard_count,
+        streak=streak,
+    )
     
 @app.route('/logout')
 def logout():

@@ -1,0 +1,57 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<main class="profile-page">
+    <section class="profile-card">
+        <div class="profile-card__header">
+            <div class="profile-avatar">👤</div>
+            <div>
+                <h2>{{ username }}</h2>
+                <p class="profile-subtitle">Account overview</p>
+            </div>
+        </div>
+
+        <div class="profile-grid">
+            <div class="profile-panel">
+                <h3>Account Information</h3>
+                <div class="profile-row">
+                    <span>👤 Username</span>
+                    <strong>{{ username }}</strong>
+                </div>
+                <div class="profile-row">
+                    <span>📧 Email</span>
+                    <strong>{{ email }}</strong>
+                </div>
+            </div>
+
+            <div class="profile-panel">
+                <h3>Account Settings</h3>
+                <a href="{{ url_for('logout') }}" class="profile-action">Logout</a>
+            </div>
+
+            <div class="profile-panel">
+                <h3>Study Summary</h3>
+                <div class="profile-row">
+                    <span>Decks</span>
+                    <strong>{{ deck_count }}</strong>
+                </div>
+                <div class="profile-row">
+                    <span>Flashcards</span>
+                    <strong>{{ flashcard_count }}</strong>
+                </div>
+                <div class="profile-row">
+                    <span>Current Streak</span>
+                    <strong>{{ streak }} Days</strong>
+                </div>
+            </div>
+
+            <div class="profile-panel danger-panel">
+                <h3>Danger Zone</h3>
+                <a href="#" class="profile-action danger">Delete Account</a>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

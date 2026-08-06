@@ -32,8 +32,8 @@
             </div>
 
             <div class="nav-right">
-                <span>{{ session['username'] }}</span>
-                <a class="profile-btn" href="#">
+                <a class="profile-link" href="{{ url_for('profile') }}">{{ session['username'] }}</a>
+                <a class="profile-btn" href="{{ url_for('profile') }}">
                     👤
                 </a>
             </div>
