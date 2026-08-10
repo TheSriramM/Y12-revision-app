@@ -1,92 +1,74 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css">
-</head>
+﻿{% extends "base.html" %}
 
-<body class="w3-light-grey">
-    <h1 class="w3-center">Create an account</h1>
-    <br><br>
+{% block title %}Register{% endblock %}
 
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      <ul>
-        {% for message in messages %}
-          <li style="color:red;">{{ message }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-    {% endwith %}
+{% block content %}
+<div class="auth-page">
+    <div class="auth-card">
+        <h2>Create an account</h2>
 
-<div class="w3-container w3-card w3-white w3-padding-32" style="max-width:400px; margin:auto; margin-top:60px;">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-message">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
 
-  <h2 class="w3-center">Register</h2>
+        <form method="POST" action="{{ url_for('register') }}">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input
+                    class="form-input"
+                    type="email"
+                    name="email"
+                    id="email"
+                    placeholder="Enter email"
+                    required
+                >
+            </div>
 
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      <div class="w3-panel w3-red w3-round">
-        {% for message in messages %}
-          <p>{{ message }}</p>
-        {% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input
+                    class="form-input"
+                    type="text"
+                    name="username"
+                    id="username"
+                    maxlength="30"
+                    placeholder="Enter username"
+                    required
+                >
+                <p class="field-note" id="username-count">0 / 30</p>
+            </div>
 
-  <form method="POST" action="{{ url_for('register') }}">
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input
+                    class="form-input"
+                    type="password"
+                    name="password"
+                    id="password"
+                    minlength="6"
+                    maxlength="64"
+                    placeholder="Enter password"
+                    required
+                >
+                <p class="field-note">Minimum 6 characters</p>
+                <p class="field-note" id="password-count">0 / 64</p>
+            </div>
 
-    <label>Email</label>
-    <input 
-      class="w3-input w3-border w3-margin-bottom" 
-      type="email" 
-      name="email" 
-      id="email"
-      placeholder="Enter email"
-      required
-    >
+            <div class="form-actions">
+                <button type="submit" class="btn-primary btn-block">Register</button>
+            </div>
+        </form>
 
-    <!-- USERNAME -->
-    <label>Username</label>
-    <input 
-      class="w3-input w3-border w3-margin-bottom" 
-      type="text" 
-      name="username" 
-      id="username"
-      maxlength="30"
-      placeholder="Enter username"
-      required
-    >
-    <p id="username-count" class="w3-small w3-text-grey">0 / 30</p>
-
-    <!-- PASSWORD -->
-    <label>Password</label>
-    <input 
-      class="w3-input w3-border w3-margin-bottom" 
-      type="password" 
-      name="password" 
-      id="password"
-      minlength="6"
-      maxlength="64"
-      placeholder="Enter password"
-      required
-    >
-    <p class="w3-small w3-text-grey">Minimum 6 characters</p>
-    <p id="password-count" class="w3-small w3-text-grey">0 / 64</p>
-    <p>Already have an account? 
-      <a href="{{ url_for('login') }}">Log in</a>
-    </p>
-    <button class="w3-button w3-blue w3-block w3-round w3-margin-top">
-      Register
-    </button>
-
-  </form>
-
+        <p class="auth-footer">
+            Already have an account?
+            <a href="{{ url_for('login') }}" class="link-secondary">Log in</a>
+        </p>
+    </div>
 </div>
-</form>
-
-</body>
-</html>
+{% endblock %}
