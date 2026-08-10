@@ -806,6 +806,12 @@ def study(deck_id):
         WHERE topic_id = ?
     """, (deck_id,))
 
+    flashcards = cursor.fetchall()
+
+    if len(flashcards) == 0:
+        flash("This deck doesn't have any flashcards.")
+        return redirect(url_for("edit_deck", deck_id=deck_id))
+
     # Start a new study session if there is not one already
     if session.get("study_session_deck") != deck_id:
 
@@ -824,12 +830,6 @@ def study(deck_id):
         # Get the sesion id and the deck that is currently being studied
         session["study_session_id"] = cursor.lastrowid
         session["study_session_deck"] = deck_id
-
-    flashcards = cursor.fetchall()
-
-    if len(flashcards) == 0:
-        flash("This deck doesn't have any flashcards.")
-        return redirect(url_for("edit_deck", deck_id=deck_id))
 
     # Reset session when changing decks
     if session.get("study_deck") != deck_id:
