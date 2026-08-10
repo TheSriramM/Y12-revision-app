@@ -170,11 +170,7 @@ main, .content {
 
     border-radius: 18px;
 
-    background: linear-gradient(
-        135deg,
-        #2E90E5 0%,
-        #1e5aa8 100%
-    );
+    background: #2E90E5;
 
     color: white;
 }
