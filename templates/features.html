@@ -1,36 +1,14 @@
 {% extends "base.html" %}
 
-{% block head %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='flashcards.css') }}">
-    <script src="{{ url_for('static', filename='js/flashcards.js') }}"></script>
-{% endblock %}
+
+{% block title %}Features{% endblock %}
 
 {% block content %}
-    <div class="flashcard-features">
-        <div class="flashcard-info features-column">
-            <h1>Create flashcards!</h1>
-            <br>
-            <h2>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque vel turpis id libero aliquam condimentum eget vitae odio. Vivamus vulputate, turpis at sagittis finibus, tortor lectus dapibus nibh, non luctus quam elit vel lacus. Mauris ullamcorper mauris a arcu varius congue. Duis a nunc dapibus, vestibulum sapien nec, luctus magna. Praesent gravida sapien ac laoreet suscipit.</h2>
-        </div>
-        <div class="flashcard-example features-column">
-            <h1>Example: Level 2 Chemistry</h1>
-            <br>
-            <a href="{{ url_for('flashcards') }}">
-                <button type="button">Start Studying Now!</button>
-            </a>
-        </div>
-    </div>
-    <div class="quiz-features">
-        <div class="quiz-info quiz-column">
-            <h1>Transform Flashcards into a Quiz!</h1>
-            <h2>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque vel turpis id libero aliquam condimentum eget vitae odio. Vivamus vulputate, turpis at sagittis finibus, tortor lectus dapibus nibh, non luctus quam elit vel lacus. Mauris ullamcorper mauris a arcu varius congue. Duis a nunc dapibus, vestibulum sapien nec, luctus magna. Praesent gravida sapien ac laoreet suscipit.</h2>
-        </div>
-        <div class="quiz-example quiz-column">
-            <h1>Test yourself now</h1>
-            <a href="{{ url_for('quiz') }}">
-                <button type="button">Test yourself now!</button>
-            </a>
-        </div>
-    </div>
+    <main class="features-page">
+        <section class="features-card">
+            <h1>Y12 Revision App</h1>
+            <p>This app helps students organise and review their revision material with personalised decks and study tools.</p>
+            <p>Create your own decks, revise with flashcards, and keep track of progress in a clean, student-friendly interface.</p>
+        </section>
+    </main>
 {% endblock %}

@@ -277,8 +277,36 @@ main, .content {
     margin-top: 12px;
 }
 
-.flashcard-example {
+.features-page {
     display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 20px 80px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.features-card {
+    width: min(100%, 840px);
+    background: white;
+    border-radius: 28px;
+    padding: 50px 40px;
+    box-shadow: 0 24px 70px rgba(16,24,40,0.09);
+    text-align: center;
+}
+
+.features-card h1 {
+    margin: 0 0 20px;
+    font-size: 2rem;
+    color: #222;
+}
+
+.features-card p {
+    margin: 0 auto 18px;
+    max-width: 760px;
+    color: #515b6c;
+    font-size: 1.15rem;
+    line-height: 1.8;
 }
 
 .link-secondary {

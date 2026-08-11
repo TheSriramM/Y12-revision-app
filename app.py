@@ -11,37 +11,6 @@ app = Flask(
 app.secret_key = 'wowow'
 DATABASE = "database.db"
 
-example_quiz = [
-    {
-        "question": "What is H2O?",
-        "options": ["Water", "Oxygen", "Salt", "Hydrogen"],
-        "answer": "Water"
-    },
-
-    {
-        "question": "What is the pH of a neutral solution?",
-        "options": ["7", "1", "14", "3"],
-        "answer": "7"
-    }
-]
-
-example_flashcards = [
-    {
-        "question": "What is H2CO3?",
-        "answer": "Carbonic acid"
-    },
-
-    {
-        "question": "What is H2O?",
-        "answer": "Water"
-    },
-
-    {
-        "question": "pH of neutral solution?",
-        "answer": "7"
-    }
-]
-
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
@@ -251,96 +220,6 @@ def register():
 @app.route('/features')
 def features():
     return render_template("features.html")
-
-@app.route('/flashcards', methods=["GET", "POST"])
-def flashcards():
-    # initialize session values only it doesn't reset
-    # the current index or answer visibility on every request
-    if 'cur_index' not in session:
-        session['cur_index'] = 0
-    session.setdefault('showing_answer', False)
-
-    if request.method == "POST":
-        action = request.form.get("action")
-
-        if action == "flip":
-            session['showing_answer'] = not session['showing_answer']
-
-        elif action == "next":
-            if session['cur_index'] < len(example_flashcards) - 1:
-                session['cur_index'] += 1
-                
-            session['showing_answer'] = False
-        
-        elif action == "prev":
-            if session['cur_index'] > 0:
-                session['cur_index'] -= 1
-
-            session['showing_answer'] = False
-        
-    current_card = example_flashcards[session['cur_index']]
-
-    if session['showing_answer']:
-        card_text = current_card["answer"]
-    else:
-        card_text = current_card["question"]
-
-
-    # Return JSON for AJAX requests (just the data for JS)
-    # This is a dictionary for the js
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return jsonify({
-            'card_text': card_text,
-            'showing_answer': session['showing_answer'],
-            'current_index': session['cur_index'],
-            'total_cards': len(example_flashcards)
-        })
-    
-    return render_template(
-        "flashcards.html",
-        card_text=card_text,
-        current_index=session['cur_index'],
-        total_cards=len(example_flashcards)
-    )
-
-@app.route('/quiz', methods=['GET', 'POST'])
-def quiz():
-    result = ""
-
-    if 'cur_question' not in session:
-        session['cur_question'] = 0
-        session['correct'] = 0
-        session['incorrect'] = 0
-
-    cur_question = session['cur_question']
-
-    if request.method == "POST":
-        selected = request.form.get("answer")
-        correct_answer = example_quiz[cur_question]["answer"]
-
-        if selected == correct_answer:
-            result = "Correct!"
-            # The second parameter is just in case the session variable has not been set or defined properly in which case 0 will be returned
-            session['correct'] = session.get('correct', 0) + 1
-        else:
-            result = "Incorrect"
-            # The second parameter is just in case the session variable has not been set or defined properly in which case 0 will be returned
-            session['incorrect'] = session.get('incorrect', 0) + 1
-
-        cur_question += 1
-        session['cur_question'] = cur_question
-
-    if cur_question >= len(example_quiz):
-        return redirect(url_for('quiz_complete'))
-
-    question = example_quiz[cur_question]
-    return render_template("quiz.html", question=question, result=result)
-
-@app.route('/quiz_complete')
-def quiz_complete():
-    correct = session.get('correct', 0)
-    incorrect = session.get('incorrect', 0)
-    return render_template("quiz_complete.html", correct=correct, incorrect=incorrect)
 
 @app.route('/dashboard')
 def dashboard():
