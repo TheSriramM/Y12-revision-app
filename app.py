@@ -244,7 +244,7 @@ def dashboard():
     deck_count = cursor.fetchone()[0]
 
     # Query the number of reviews for the user
-    cursor.execute("SELECT COUNT(*) FROM study_sessions;")
+    cursor.execute("SELECT COUNT(*) FROM study_sessions WHERE user_id = ?;", (session['user_id'],))
     reviews = cursor.fetchone()[0]
 
     # The study dates
@@ -981,7 +981,27 @@ def profile():
         flashcard_count=flashcard_count,
         streak=streak,
     )
-    
+
+@app.route('/delete_account', methods=['POST'])
+def delete_account():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    user_id = session['user_id']
+    db = get_db()
+    cursor = db.cursor()
+
+    # Delete the user's data
+    cursor.execute("DELETE FROM study_sessions WHERE user_id = ?", (user_id,))
+    cursor.execute("DELETE FROM flashcards WHERE topic_id IN (SELECT id FROM topics WHERE user_id = ?)", (user_id,))
+    cursor.execute("DELETE FROM topics WHERE user_id = ?", (user_id,))
+    cursor.execute("DELETE FROM users WHERE id = ?", (user_id,))
+    db.commit()
+
+    session.clear()
+    flash("Your account has been deleted.")
+    return redirect(url_for('home'))
+
 @app.route('/logout')
 def logout():
     session.clear()

@@ -49,7 +49,9 @@
 
             <div class="profile-panel danger-panel">
                 <h3>Danger Zone</h3>
-                <a href="#" class="profile-action danger">Delete Account</a>
+                <form method="POST" action="{{ url_for('delete_account') }}" onsubmit="return confirm('This will permanently delete your account and all saved data. Continue?');">
+                    <button type="submit" class="profile-action danger">Delete Account</button>
+                </form>
             </div>
         </div>
     </section>
