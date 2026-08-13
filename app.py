@@ -3,10 +3,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import sqlite3
+import secrets
 import os
 
 load_dotenv()
-secret_key = os.getenv('SECRET_KEY', 'mysecretkey')
+secret_key = os.getenv('SECRET_KEY', secrets.token_hex(32))
 
 app = Flask(
     __name__,
