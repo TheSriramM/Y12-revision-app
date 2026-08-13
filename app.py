@@ -1,14 +1,19 @@
 from flask import Flask, session, request, render_template, redirect, url_for, g, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
 import sqlite3
+import os
+
+load_dotenv()
+secret_key = os.getenv('SECRET_KEY', 'mysecretkey')
 
 app = Flask(
     __name__,
     template_folder='templates',
     static_folder='static',
 )
-app.secret_key = 'wowow'
+app.config['SECRET_KEY'] = secret_key
 DATABASE = "database.db"
 
 def get_db():
