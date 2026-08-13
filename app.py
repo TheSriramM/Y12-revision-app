@@ -296,7 +296,7 @@ def edit_deck(deck_id):
     db = get_db()
     cursor = db.cursor()
     cursor.execute(
-        "SELECT id, name, description, subject, cover_color, is_public FROM topics WHERE id = ? AND user_id = ?",
+        "SELECT id, name, description, subject, cover_color FROM topics WHERE id = ? AND user_id = ?",
         (deck_id, session['user_id'])
     )
     deck = cursor.fetchone()
@@ -319,8 +319,6 @@ def edit_deck(deck_id):
         "deck_name": deck[1],
         "description": deck[2] or "",
         "subject": deck[3] or "",
-        "cover_color": deck[4] or "#2E90E5",
-        "visibility": "public" if deck[5] else "private"
     }
 
     return render_template("edit_deck.html", form_data=form_data, flashcards=flashcards)
@@ -390,7 +388,6 @@ def create_deck():
         "subject": "",
         "description": "",
         "cover_color": "",
-        "visibility": "private"
     }
 
     # Get what the user entered as the input for each field
@@ -399,14 +396,12 @@ def create_deck():
         subject = request.form.get('subject', '').strip()
         description = request.form.get('description', '').strip()
         cover_color = request.form.get('cover_color', '').strip() or "#2E90E5"
-        visibility = request.form.get('visibility', 'private')
 
         form_data.update({
             "deck_name": deck_name,
             "subject": subject,
             "description": description,
             "cover_color": cover_color,
-            "visibility": visibility,
         })
 
         if not deck_name or not subject:
@@ -418,10 +413,10 @@ def create_deck():
 
         cursor.execute(
             """
-            INSERT INTO topics (name, user_id, description, subject, cover_color, is_public)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO topics (name, user_id, description, subject, cover_color)
+            VALUES (?, ?, ?, ?, ?)
             """,
-            (deck_name, session['user_id'], description or None, subject, cover_color, 1 if visibility == 'public' else 0)
+            (deck_name, session['user_id'], description or None, subject, cover_color)
         )
         
         # Modifies the database
@@ -563,7 +558,7 @@ def update_deck(deck_id):
     cursor = db.cursor()
 
     cursor.execute("""
-        SELECT id, name, description, subject, cover_color, is_public
+        SELECT id, name, description, subject, cover_color
         FROM topics
         WHERE id = ?
         AND user_id = ?
@@ -580,7 +575,6 @@ def update_deck(deck_id):
         "subject": deck[3],
         "description": deck[2] or "",
         "cover_color": deck[4] or "#2E90E5",
-        "visibility": "public" if deck[5] else "private"
     }
 
     if request.method == "POST":
@@ -589,14 +583,12 @@ def update_deck(deck_id):
         subject = request.form.get("subject", "").strip()
         description = request.form.get("description", "").strip()
         cover_color = request.form.get("cover_color")
-        visibility = request.form.get("visibility")
 
         form_data.update({
             "deck_name": deck_name,
             "subject": subject,
             "description": description,
             "cover_color": cover_color,
-            "visibility": visibility
         })
 
         if not deck_name or not subject:
@@ -614,14 +606,12 @@ def update_deck(deck_id):
                 subject=?,
                 description=?,
                 cover_color=?,
-                is_public=?
             WHERE id=?
         """, (
             deck_name,
             subject,
             description or None,
             cover_color,
-            1 if visibility == "public" else 0,
             deck_id
         ))
 
