@@ -13,12 +13,17 @@
         <h1 class="logo"><b>Quizcards</b></h1>
         <nav class="navbar">
             <div class="nav-left">
-                <a href="{{ url_for('home') }}">Home</a>
-                <a href="{{ url_for('features') }}">Features</a>
+                <a href="{{ url_for('home') }}" class="nav-link {% if request.endpoint == 'home' %}active{% endif %}">
+                    Home
+                </a>
+
+                <a href="{{ url_for('features') }}" class="nav-link {% if request.endpoint == 'features' %}active{% endif %}">
+                    Features
+                </a>
             </div>
 
             <div class="nav-right">
-                <a href="{{ url_for('login') }}">Log In</a>
+                <a href="{{ url_for('login') }}" class="nav-link {% if request.endpoint == 'login' %}active{% endif %}">Log In</a>
             </div>
         </nav>
     </header>

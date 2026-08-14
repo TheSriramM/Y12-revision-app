@@ -26,9 +26,9 @@
 
         <nav class="navbar">
             <div class="nav-left">
-                <a href="{{ url_for('dashboard') }}">Dashboard</a>
-                <a href="{{ url_for('decks') }}">My Decks</a>
-                <a href="{{ url_for('progress') }}">Progress</a>
+                <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">Dashboard</a>
+                <a href="{{ url_for('decks') }}" class="nav-link {% if request.endpoint == 'decks' %}active{% endif %}">My Decks</a>
+                <a href="{{ url_for('progress') }}" class="nav-link {% if request.endpoint == 'progress' %}active{% endif %}">Progress</a>
             </div>
 
             <div class="nav-right">
