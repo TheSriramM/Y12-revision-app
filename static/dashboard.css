@@ -774,6 +774,14 @@ html {
     border-radius: 12px;
     font-size: 1rem;
     font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+    outline: none;
+    border-color: #2E90E5;
+    box-shadow: 0 0 0 3px rgba(46, 144, 229, 0.12);
 }
 
 /* Allows the field to resize vertically instead of horizontally which is for responsiveness */
