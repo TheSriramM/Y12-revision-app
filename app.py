@@ -23,7 +23,7 @@ def get_db():
         db = g._database = sqlite3.connect(DATABASE)
         # Allows for tuples to be accessed by column name as well as indices
         db.row_factory = sqlite3.Row
-    
+
     db.execute("PRAGMA foreign_keys = ON")
     return db
 
@@ -217,7 +217,8 @@ def register():
             session['username'] = username
 
         except sqlite3.IntegrityError:
-            return "Username or email already exists"
+            flash("Username or email already exists")
+            # return "Username or email already exists"
 
         return redirect(url_for('login'))
 
@@ -606,7 +607,7 @@ def update_deck(deck_id):
             SET name=?,
                 subject=?,
                 description=?,
-                cover_color=?,
+                cover_color=?
             WHERE id=?
         """, (
             deck_name,
