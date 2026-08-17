@@ -218,7 +218,6 @@ def register():
 
         except sqlite3.IntegrityError:
             flash("Username or email already exists")
-            # return "Username or email already exists"
 
         return redirect(url_for('login'))
 

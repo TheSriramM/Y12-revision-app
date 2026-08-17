@@ -107,7 +107,8 @@ main, .content {
 }
 
 .btn-primary:hover {
-    transform: translateY(-2px);
+    /* transform: translateY(-2px); */
+    filter: brightness(0.92);
 }
 
 .btn-secondary {
@@ -131,7 +132,8 @@ main, .content {
 }
 
 .btn-secondary:hover {
-    transform: translateY(-2px);
+    filter: brightness(0.72);
+    text-decoration: underline;
 }
 
 .auth-page {

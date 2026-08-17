@@ -7,6 +7,10 @@ html {
     overflow-y: scroll;
 }
 
+a {
+    text-decoration: none;
+}
+
 .logo{
     text-align:center;
     font-size:3rem;
@@ -187,7 +191,7 @@ html {
 }
 
 .profile-action:hover {
-    background: #1e7fca;
+    filter: brightness(92%);
 }
 
 .profile-action.danger {
@@ -499,8 +503,14 @@ html {
     text-align: center;
 }
 
-.btn-primary:hover, .btn-secondary:hover {
-    transform: translateY(-2px);
+.btn-primary:hover{
+    /* transform: translateY(-2px);*/
+    filter: brightness(0.92);
+}
+
+.btn-secondary:hover {
+    filter: brightness(0.72);
+    text-decoration: underline;
 }
 
 /* Header variant for decks page to center title and show a prominent create button */
