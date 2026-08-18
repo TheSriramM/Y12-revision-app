@@ -135,6 +135,7 @@ def calculate_longest_streak(study_dates):
 
     return longest
 
+
 @app.teardown_appcontext
 def close_connection(exception):
     db = getattr(g, '_database', None)
@@ -145,9 +146,11 @@ def close_connection(exception):
 def index():
     return render_template("home.html")
 
+
 @app.route('/home')
 def home():
     return render_template("home.html",)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -176,6 +179,7 @@ def login():
         
     # Sets the username input value to identifier which means the username/email field remains filled
     return render_template("login.html", identifier="")
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -223,9 +227,11 @@ def register():
 
     return render_template("register.html")
 
+
 @app.route('/features')
 def features():
     return render_template("features.html")
+
 
 @app.route('/dashboard')
 def dashboard():
@@ -262,6 +268,7 @@ def dashboard():
 
     return render_template("dashboard.html", username=session['username'], deck_count=deck_count, reviews=reviews, streak=streak)
 
+
 @app.route('/decks')
 def decks():
     if 'username' not in session:
@@ -288,6 +295,7 @@ def decks():
     ]
 
     return render_template("decks.html", decks=decks)
+
 
 @app.route('/edit_deck/<int:deck_id>')
 def edit_deck(deck_id):
@@ -323,6 +331,7 @@ def edit_deck(deck_id):
     }
 
     return render_template("edit_deck.html", form_data=form_data, flashcards=flashcards)
+
 
 @app.route('/add_card/<int:deck_id>', methods=['GET', 'POST'])
 def add_card(deck_id):
@@ -375,6 +384,7 @@ def add_card(deck_id):
         return redirect(url_for('edit_deck', deck_id=deck_id))
 
     return render_template("add_card.html", deck={"id": deck[0], "name": deck[1]}, form_data=form_data, edit_mode=False)
+
 
 @app.route('/create_deck', methods=['GET', 'POST'])
 def create_deck():
@@ -429,6 +439,7 @@ def create_deck():
 
     return render_template("create_deck.html", form_data=form_data)
 
+
 @app.route("/delete_card/<int:card_id>", methods=["POST"])
 def delete_card(card_id):
     if 'username' not in session:
@@ -470,6 +481,7 @@ def delete_card(card_id):
     flash("Card deleted successfully.")
 
     return redirect(url_for('edit_deck', deck_id=deck_id))
+
 
 @app.route('/edit_card/<int:card_id>', methods=['GET', 'POST'])
 def edit_card(card_id):
@@ -549,6 +561,7 @@ def edit_card(card_id):
         edit_mode=True
     )
 
+
 @app.route('/update_deck/<int:deck_id>', methods=['GET', 'POST'])
 def update_deck(deck_id):
 
@@ -627,6 +640,7 @@ def update_deck(deck_id):
         edit_mode=True
     )
 
+
 @app.route('/delete_deck/<int:deck_id>', methods=['POST'])
 def delete_deck(deck_id):
 
@@ -650,6 +664,7 @@ def delete_deck(deck_id):
 
     flash("Deck deleted successfully.")
     return redirect(url_for("decks"))
+
 
 @app.route('/study/<int:deck_id>', methods=['GET', 'POST'])
 def study(deck_id):
@@ -809,6 +824,7 @@ def study(deck_id):
         total_cards=len(flashcards)
     )
 
+
 @app.route('/progress')
 def progress():
     if 'username' not in session:
@@ -929,6 +945,7 @@ def progress():
         recent_sessions=recent_sessions,
     )
 
+
 @app.route('/profile')
 def profile():
     if 'username' not in session:
@@ -982,6 +999,7 @@ def profile():
         streak=streak,
     )
 
+
 @app.route('/delete_account', methods=['POST'])
 def delete_account():
     if 'user_id' not in session:
@@ -1002,10 +1020,12 @@ def delete_account():
     flash("Your account has been deleted.")
     return redirect(url_for('home'))
 
+
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('home'))
+
 
 if __name__ == "__main__":
     app.run(debug=True)
