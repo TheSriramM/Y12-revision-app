@@ -376,3 +376,7 @@ main, .content {
 .nav-right a:hover{
     opacity:.75;
 }
+
+.required-star {
+    color: red;
+}
