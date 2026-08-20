@@ -232,7 +232,6 @@ def register():
 def features():
     return render_template("features.html")
 
-
 @app.route('/dashboard')
 def dashboard():
     if 'username' not in session:
@@ -1026,6 +1025,9 @@ def logout():
     session.clear()
     return redirect(url_for('home'))
 
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template("errors/404.html"), 404
 
 if __name__ == "__main__":
     app.run(debug=True)
