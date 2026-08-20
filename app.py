@@ -1025,6 +1025,7 @@ def logout():
     session.clear()
     return redirect(url_for('home'))
 
+# 404 handler
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template("errors/404.html"), 404

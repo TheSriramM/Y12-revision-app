@@ -709,6 +709,7 @@ a {
     flex-wrap: wrap;
     gap: 12px;
     margin-top: 8px;
+    pointer-events: auto;
 }
 
 .create-deck-container {
@@ -1019,4 +1020,5 @@ a {
     align-items: center;
     justify-content: center;
     text-align: center;
+    cursor: pointer;
 }
