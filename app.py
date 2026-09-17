@@ -30,6 +30,7 @@ DATABASE = "database.db"
 
 
 def get_db():
+    """Connecting to the database"""
     db = getattr(g, "_database", None)
     if db is None:
         db = g._database = sqlite3.connect(DATABASE)
@@ -40,9 +41,10 @@ def get_db():
     return db
 
 
-# The process of how fcard reviews work and how they are counted
-# This is used in the study function
 def mark_reviewed_card(cursor, session_data, session_id, card_id, reviewed_cards):
+    """The process of how fcard reviews work and how they are counted
+    This is used in the study function"""
+
     if card_id in reviewed_cards:
         return False
 
@@ -62,6 +64,7 @@ def mark_reviewed_card(cursor, session_data, session_id, card_id, reviewed_cards
 
 
 def format_study_time(value):
+    """Used for formatting study times into a readable format"""
     if not value:
         return "No study sessions yet"
 
@@ -94,8 +97,9 @@ def format_study_time(value):
     return f"{day_label} at {hour}:{minute} {suffix}"
 
 
-# Similar to the above function except just return the date without the time
 def format_recent_label(value):
+    """Similar to the above function except just return the date without the time"""
+
     if not value:
         return "Recent"
 
@@ -110,8 +114,8 @@ def format_recent_label(value):
     return value.strftime("%d %b")
 
 
-# Calculate streaks
 def calculate_streak(study_dates):
+    """Calculate streaks"""
     if not study_dates:
         return 0
 
@@ -135,8 +139,9 @@ def calculate_streak(study_dates):
     return streak
 
 
-# Find the longest ever streak
 def calculate_longest_streak(study_dates):
+    """Find the longest ever streak"""
+
     if not study_dates:
         return 0
 
@@ -157,6 +162,8 @@ def calculate_longest_streak(study_dates):
 
 @app.teardown_appcontext
 def close_connection(exception):
+    """Closes the connection with the database"""
+
     db = getattr(g, "_database", None)
     if db is not None:
         db.close()
@@ -164,11 +171,15 @@ def close_connection(exception):
 
 @app.route("/")
 def index():
+    """The home webpage"""
+
     return render_template("home.html")
 
 
 @app.route("/home")
 def home():
+    """The home webpage"""
+
     return render_template(
         "home.html",
     )
@@ -176,6 +187,8 @@ def home():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    """The login page"""
+
     if request.method == "POST":
         identifier = request.form["username"]  # can be username OR email
         password = request.form["password"]
@@ -202,13 +215,15 @@ def login():
             flash("Invalid login")
             return render_template("login.html", identifier=identifier)
 
-    # Sets the username input value to identifier 
+    # Sets the username input value to identifier
     # This means the username/email field remains filled
     return render_template("login.html", identifier="")
 
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    """Register page"""
+
     if request.method == "POST":
         email = request.form["email"]
         username = request.form["username"]
@@ -256,11 +271,15 @@ def register():
 
 @app.route("/features")
 def features():
+    """Features page"""
+
     return render_template("features.html")
 
 
 @app.route("/dashboard")
 def dashboard():
+    """Dashboard page"""
+
     if "username" not in session:
         return redirect(url_for("login"))  # block access
 
@@ -313,6 +332,8 @@ def dashboard():
 
 @app.route("/decks")
 def decks():
+    """The user can access their decks and create a new one"""
+
     if "username" not in session:
         return redirect(url_for("login"))
 
@@ -341,6 +362,8 @@ def decks():
 
 @app.route("/edit_deck/<int:deck_id>")
 def edit_deck(deck_id):
+    """The user can edit their deck"""
+
     if "username" not in session:
         return redirect(url_for("login"))
 
@@ -378,6 +401,8 @@ def edit_deck(deck_id):
 
 @app.route("/add_card/<int:deck_id>", methods=["GET", "POST"])
 def add_card(deck_id):
+    """A page for adding cards"""
+
     if "username" not in session:
         return redirect(url_for("login"))
 
@@ -440,6 +465,7 @@ def add_card(deck_id):
 
 @app.route("/create_deck", methods=["GET", "POST"])
 def create_deck():
+    """Page for creating a new deck"""
 
     # If the user tries to access this page without logging in through the modifying the url
     if "username" not in session:
@@ -496,6 +522,8 @@ def create_deck():
 
 @app.route("/delete_card/<int:card_id>", methods=["POST"])
 def delete_card(card_id):
+    """Deleting a card"""
+
     if "username" not in session:
         return redirect(url_for("login"))
 
@@ -535,6 +563,7 @@ def delete_card(card_id):
 
 @app.route("/edit_card/<int:card_id>", methods=["GET", "POST"])
 def edit_card(card_id):
+    """Editing each card"""
 
     if "username" not in session:
         return redirect(url_for("login"))
@@ -609,6 +638,7 @@ def edit_card(card_id):
 
 @app.route("/update_deck/<int:deck_id>", methods=["GET", "POST"])
 def update_deck(deck_id):
+    """Update decks"""
 
     if "username" not in session:
         return redirect(url_for("login"))
@@ -683,6 +713,7 @@ def update_deck(deck_id):
 
 @app.route("/delete_deck/<int:deck_id>", methods=["POST"])
 def delete_deck(deck_id):
+    """Delete decks"""
 
     if "username" not in session:
         return redirect(url_for("login"))
@@ -709,6 +740,8 @@ def delete_deck(deck_id):
 
 @app.route("/study/<int:deck_id>", methods=["GET", "POST"])
 def study(deck_id):
+    """Study a deck
+    Each time a user studies it records a study session"""
 
     if "username" not in session:
         return redirect(url_for("login"))
@@ -891,6 +924,9 @@ def study(deck_id):
 
 @app.route("/progress")
 def progress():
+    """The progress page where the user can view their stats
+    This will give them insights about how much they have studied"""
+
     if "username" not in session:
         return redirect(url_for("login"))
 
@@ -1039,6 +1075,8 @@ def progress():
 
 @app.route("/profile")
 def profile():
+    """A profile page for each user where they can manage their account"""
+
     if "username" not in session:
         return redirect(url_for("login"))
 
@@ -1107,6 +1145,8 @@ def profile():
 
 @app.route("/delete_account", methods=["POST"])
 def delete_account():
+    """A function for the delete account button"""
+
     if "user_id" not in session:
         return redirect(url_for("login"))
 
@@ -1131,13 +1171,16 @@ def delete_account():
 
 @app.route("/logout")
 def logout():
+    """Function for the logout button"""
+
     session.clear()
     return redirect(url_for("home"))
 
 
-# 404 handler
 @app.errorhandler(404)
 def page_not_found(error):
+    """404 error handler"""
+
     return render_template("errors/404.html"), 404
 
 
