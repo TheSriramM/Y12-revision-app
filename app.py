@@ -1,11 +1,11 @@
 """Revision app for flashcard-based study tracking and deck management."""
 
-# pylint: disable=too-many-lines,too-many-return-statements,too-many-branches,too-many-statements
 
 import os
 import secrets
 import sqlite3
 from datetime import datetime, timedelta
+from functools import wraps
 
 from dotenv import load_dotenv
 from flask import (
@@ -31,6 +31,31 @@ app = Flask(
 )
 app.config["SECRET_KEY"] = secret_key
 DATABASE = "database.db"
+
+
+# Login required decorator
+def login_required(view_func):
+    """Redirect unauthenticated users to the login page"""
+
+    # wraps ensures that the function's name is used for url routes
+    # This means the decorator can be used across multiple function without crashes
+    @wraps(view_func)
+
+    # A new temporary function wraps around the original function
+    # We don't know how many inputs there are for the original function
+    # This means we use *args and **kwargs which can take any number of inputs
+    # *args stores the inputs in a tuple while **kwargs stores it in a dictionary
+    def wrapped_view(*args, **kwargs):
+
+        # Perform the authenticity check
+        if "user_id" not in session and "username" not in session:
+            return redirect(url_for("login"))
+
+        # Runs the original function
+        return view_func(*args, **kwargs)
+
+    # Returns the secure route
+    return wrapped_view
 
 
 def get_db():
@@ -279,11 +304,9 @@ def features():
 
 
 @app.route("/dashboard")
+@login_required
 def dashboard():
     """Dashboard page"""
-
-    if "username" not in session:
-        return redirect(url_for("login"))  # block access
 
     # Get the number of decks the user has created
     db = get_db()
@@ -333,11 +356,9 @@ def dashboard():
 
 
 @app.route("/decks")
+@login_required
 def decks():
     """Display all decks belonging to the current user."""
-
-    if "username" not in session:
-        return redirect(url_for("login"))
 
     db = get_db()
     cursor = db.cursor()
@@ -363,11 +384,9 @@ def decks():
 
 
 @app.route("/edit_deck/<int:deck_id>")
+@login_required
 def edit_deck(deck_id):
     """The user can edit their deck"""
-
-    if "username" not in session:
-        return redirect(url_for("login"))
 
     db = get_db()
     cursor = db.cursor()
@@ -402,11 +421,9 @@ def edit_deck(deck_id):
 
 
 @app.route("/add_card/<int:deck_id>", methods=["GET", "POST"])
+@login_required
 def add_card(deck_id):
     """A page for adding cards"""
-
-    if "username" not in session:
-        return redirect(url_for("login"))
 
     db = get_db()
     cursor = db.cursor()
@@ -466,12 +483,9 @@ def add_card(deck_id):
 
 
 @app.route("/create_deck", methods=["GET", "POST"])
+@login_required
 def create_deck():
     """Page for creating a new deck"""
-
-    # If the user tries to access this page without logging in through the modifying the url
-    if "username" not in session:
-        return redirect(url_for("login"))
 
     # The fields
     form_data = {
@@ -523,11 +537,9 @@ def create_deck():
 
 
 @app.route("/delete_card/<int:card_id>", methods=["POST"])
+@login_required
 def delete_card(card_id):
     """Deleting a card"""
-
-    if "username" not in session:
-        return redirect(url_for("login"))
 
     db = get_db()
     cursor = db.cursor()
@@ -564,11 +576,9 @@ def delete_card(card_id):
 
 
 @app.route("/edit_card/<int:card_id>", methods=["GET", "POST"])
+@login_required
 def edit_card(card_id):
     """Editing each card"""
-
-    if "username" not in session:
-        return redirect(url_for("login"))
 
     db = get_db()
     cursor = db.cursor()
@@ -639,11 +649,9 @@ def edit_card(card_id):
 
 
 @app.route("/update_deck/<int:deck_id>", methods=["GET", "POST"])
+@login_required
 def update_deck(deck_id):
     """Update decks"""
-
-    if "username" not in session:
-        return redirect(url_for("login"))
 
     db = get_db()
     cursor = db.cursor()
@@ -714,11 +722,9 @@ def update_deck(deck_id):
 
 
 @app.route("/delete_deck/<int:deck_id>", methods=["POST"])
+@login_required
 def delete_deck(deck_id):
     """Delete decks"""
-
-    if "username" not in session:
-        return redirect(url_for("login"))
 
     db = get_db()
     cursor = db.cursor()
@@ -741,12 +747,10 @@ def delete_deck(deck_id):
 
 
 @app.route("/study/<int:deck_id>", methods=["GET", "POST"])
+@login_required
 def study(deck_id):
     """Study a deck
     Each time a user studies it records a study session"""
-
-    if "username" not in session:
-        return redirect(url_for("login"))
 
     db = get_db()
     cursor = db.cursor()
@@ -925,12 +929,10 @@ def study(deck_id):
 
 
 @app.route("/progress")
+@login_required
 def progress():
     """The progress page where the user can view their stats
     This will give them insights about how much they have studied"""
-
-    if "username" not in session:
-        return redirect(url_for("login"))
 
     db = get_db()
     cursor = db.cursor()
@@ -1076,11 +1078,9 @@ def progress():
 
 
 @app.route("/profile")
+@login_required
 def profile():
     """A profile page for each user where they can manage their account"""
-
-    if "username" not in session:
-        return redirect(url_for("login"))
 
     db = get_db()
     cursor = db.cursor()
@@ -1146,11 +1146,9 @@ def profile():
 
 
 @app.route("/delete_account", methods=["POST"])
+@login_required
 def delete_account():
     """A function for the delete account button"""
-
-    if "user_id" not in session:
-        return redirect(url_for("login"))
 
     user_id = session["user_id"]
     db = get_db()
