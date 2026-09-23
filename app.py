@@ -1,4 +1,4 @@
-"""Revision app for flashcard-based study tracking and deck management."""
+"""Revision app for flashcard """
 
 
 import os
@@ -70,9 +70,10 @@ def get_db():
     return db
 
 
-def mark_reviewed_card(cursor, session_data, session_id, card_id, reviewed_cards):
-    """The process of how card reviews work and how they are counted
-    This is used in the study function"""
+def mark_reviewed_card(cursor, session_data, session_id, card_id):
+    """Increment a study session only once per flashcard in this session."""
+
+    reviewed_cards = session_data.get("reviewed_cards", [])
 
     if card_id in reviewed_cards:
         return False
@@ -788,11 +789,12 @@ def study(deck_id):
         flash("This deck doesn't have any flashcards.")
         return redirect(url_for("edit_deck", deck_id=deck_id))
 
-    # Start a new study session if there is not one already
-    if session.get("study_session_deck") != deck_id:
+    # Start a new study session if this user is not currently studying this deck.
+    if session.get("study_deck") != deck_id:
         session["study_deck"] = deck_id
         session["cur_index"] = 0
         session["showing_answer"] = False
+        session["reviewed_cards"] = []
 
         cursor.execute(
             """
@@ -805,15 +807,7 @@ def study(deck_id):
 
         db.commit()
 
-        # Get the sesion id and the deck that is currently being studied
         session["study_session_id"] = cursor.lastrowid
-        session["study_session_deck"] = deck_id
-
-    # Reset session when changing decks
-    if session.get("study_deck") != deck_id:
-        session["study_deck"] = deck_id
-        session["cur_index"] = 0
-        session["showing_answer"] = False
 
     if request.method == "POST":
         action = request.form.get("action")
@@ -823,14 +817,12 @@ def study(deck_id):
 
             if len(flashcards) == 1 and session.get("study_session_id") is not None:
                 current_card_id = flashcards[session["cur_index"]]["id"]
-                reviewed = session.get("reviewed_cards", [])
 
                 if mark_reviewed_card(
                     cursor,
                     session,
                     session["study_session_id"],
                     current_card_id,
-                    reviewed,
                 ):
                     db.commit()
 
@@ -843,11 +835,10 @@ def study(deck_id):
             # Make sure user doesn't increase cards reviewed by spamming next and prev
             # This is done by keeping track of the card numbers of the cards reviewed
             current_card_id = flashcards[session["cur_index"]]["id"]
-            reviewed = session.get("reviewed_cards", [])
 
             # If the current card not reviewed, update the cards reviewed in the database
             if mark_reviewed_card(
-                cursor, session, session["study_session_id"], current_card_id, reviewed
+                cursor, session, session["study_session_id"], current_card_id
             ):
                 db.commit()
 
@@ -860,14 +851,12 @@ def study(deck_id):
         elif action == "finish":
             if len(flashcards) == 1 and session.get("study_session_id") is not None:
                 current_card_id = flashcards[session["cur_index"]]["id"]
-                reviewed = session.get("reviewed_cards", [])
 
                 if mark_reviewed_card(
                     cursor,
                     session,
                     session["study_session_id"],
                     current_card_id,
-                    reviewed,
                 ):
                     db.commit()
 
@@ -886,8 +875,10 @@ def study(deck_id):
                 db.commit()
 
             # Removing the old session info
+            session.pop("study_deck", None)
             session.pop("study_session_id", None)
-            session.pop("study_session_deck", None)
+            session.pop("cur_index", None)
+            session.pop("showing_answer", None)
             session.pop("reviewed_cards", None)
 
             flash("Study session complete!")
