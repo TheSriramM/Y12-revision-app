@@ -249,7 +249,8 @@ def login():
 
         user = cursor.fetchone()
 
-
+        # Checks that the user's password corresponds with the stored hash
+        # on the database
         if user and check_password_hash(user[2], password):
             session["user_id"] = user[0]
             session["username"] = user[1]
