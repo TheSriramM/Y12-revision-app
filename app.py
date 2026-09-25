@@ -32,6 +32,9 @@ app = Flask(
 app.config["SECRET_KEY"] = secret_key
 DATABASE = "database.db"
 
+# Flask app setup is kept simple here: the secret key protects sessions and the
+# database name is used across all routes that talk to SQLite.
+
 
 # Login required decorator
 def login_required(view_func):
@@ -60,6 +63,7 @@ def login_required(view_func):
 
 def get_db():
     """Connecting to the database"""
+
     db = getattr(g, "_database", None)
     if db is None:
         db = g._database = sqlite3.connect(DATABASE)
@@ -73,6 +77,8 @@ def get_db():
 def mark_reviewed_card(cursor, session_data, session_id, card_id):
     """Increment a study session only once per flashcard in this session."""
 
+    # Keep a per-session list of card ids so repeated clicks on next/flip
+    # do not count the same flashcard multiple times.
     reviewed_cards = session_data.get("reviewed_cards", [])
 
     if card_id in reviewed_cards:
@@ -81,6 +87,7 @@ def mark_reviewed_card(cursor, session_data, session_id, card_id):
     reviewed_cards.append(card_id)
     session_data["reviewed_cards"] = reviewed_cards
 
+    # Increase the cards reviewed by 1
     cursor.execute(
         """
         UPDATE study_sessions
@@ -146,11 +153,15 @@ def format_recent_label(value):
 
 def calculate_streak(study_dates):
     """Calculate the current consecutive study streak for a user."""
+
+    # If the user has not studied since the list is empty
     if not study_dates:
         return 0
 
+    # Find the number of unique days that the individual has studied
     study_set = set(study_dates)
 
+    # The current day
     current = datetime.now().date()
     streak = 0
 
@@ -170,9 +181,11 @@ def calculate_streak(study_dates):
 def calculate_longest_streak(study_dates):
     """Find the longest consecutive streak in a collection of study dates."""
 
+    # If the user has not studied since the list is empty
     if not study_dates:
         return 0
 
+    # Variables needed to calculate longest streak
     ordered_dates = sorted(study_dates)
     longest = 1
     current_run = 1
@@ -224,6 +237,7 @@ def login():
         db = get_db()
         cursor = db.cursor()
 
+        # Find the user with the same username or password
         cursor.execute(
             """
             SELECT id, username, password_hash 
@@ -234,6 +248,7 @@ def login():
         )
 
         user = cursor.fetchone()
+
 
         if user and check_password_hash(user[2], password):
             session["user_id"] = user[0]
@@ -252,6 +267,7 @@ def login():
 def register():
     """Register page"""
 
+    # This route handles both the initial page load and the form submission.
     if request.method == "POST":
         email = request.form["email"]
         username = request.form["username"]
@@ -301,6 +317,7 @@ def register():
 def features():
     """Features page"""
 
+    # This is just a static marketing page for the app's main features.
     return render_template("features.html")
 
 
@@ -364,12 +381,15 @@ def decks():
     db = get_db()
     cursor = db.cursor()
 
+    # Get all of the decks that the user has from the database
     cursor.execute(
         "SELECT id, name, description, subject, cover_color FROM topics WHERE user_id = ?",
         (session["user_id"],),
     )
     rows = cursor.fetchall()
 
+    # Convert the raw SQLite rows into a cleaner dictionary format for the Jinja
+    # template to render in the deck list.
     deck_list = [
         {
             "id": topic[0],
@@ -391,6 +411,8 @@ def edit_deck(deck_id):
 
     db = get_db()
     cursor = db.cursor()
+
+    # Get the information about the deck
     cursor.execute(
         """SELECT id, name, description, subject, cover_color 
             FROM topics
@@ -399,6 +421,7 @@ def edit_deck(deck_id):
     )
     deck = cursor.fetchone()
 
+    # If the deck is not found then redirect back to decks page
     if not deck:
         flash("Deck not found.")
         return redirect(url_for("decks"))
@@ -439,6 +462,7 @@ def add_card(deck_id):
         flash("Deck not found.")
         return redirect(url_for("decks"))
 
+    # Where each question and answer for a flashcard will be stored
     form_data = {"question": "", "answer": ""}
 
     if request.method == "POST":
@@ -446,6 +470,7 @@ def add_card(deck_id):
         answer = request.form.get("answer", "")
         action = request.form.get("action", "save")
 
+        # Update the form data
         form_data.update(
             {
                 "question": question,
@@ -488,7 +513,8 @@ def add_card(deck_id):
 def create_deck():
     """Page for creating a new deck"""
 
-    # The fields
+    # The form keeps a copy of the entered values so the page can re-render the
+    # user's data if validation fails or the user submits incomplete information
     form_data = {
         "deck_name": "",
         "subject": "",
@@ -503,6 +529,7 @@ def create_deck():
         description = request.form.get("description", "").strip()
         cover_color = request.form.get("cover_color", "").strip() or "#2E90E5"
 
+        # Update the form data
         form_data.update(
             {
                 "deck_name": deck_name,
@@ -512,6 +539,7 @@ def create_deck():
             }
         )
 
+        # If the user does not enter the deck_name or subject fields
         if not deck_name or not subject:
             flash("Deck name and subject are required.")
             return render_template("create_deck.html", form_data=form_data)
@@ -519,6 +547,7 @@ def create_deck():
         db = get_db()
         cursor = db.cursor()
 
+        # Insert the details for the new deck that has been created
         cursor.execute(
             """
             INSERT INTO topics (name, user_id, description, subject, cover_color)
@@ -545,6 +574,7 @@ def delete_card(card_id):
     db = get_db()
     cursor = db.cursor()
 
+    # Get the flashcards for the specific topic
     cursor.execute("SELECT topic_id FROM flashcards WHERE id = ?", (card_id,))
     card = cursor.fetchone()
 
@@ -554,7 +584,8 @@ def delete_card(card_id):
 
     deck_id = card[0]
 
-    # Checking if this deck belongs to the specific user
+    # Check ownership before deleting anything so users cannot modify someone
+    # else's cards by guessing the URL
     cursor.execute(
         "SELECT 1 FROM topics WHERE id = ? AND user_id = ?",
         (deck_id, session["user_id"]),
@@ -565,6 +596,7 @@ def delete_card(card_id):
         flash("You do not have permission to delete that card.")
         return redirect(url_for("decks"))
 
+    # Delete the specific card
     cursor.execute(
         "DELETE FROM flashcards WHERE id = ? AND topic_id = ?", (card_id, deck_id)
     )
@@ -606,16 +638,19 @@ def edit_card(card_id):
 
     card = cursor.fetchone()
 
+    # If the card is not found
     if not card:
         flash("Flashcard not found.")
         return redirect(url_for("decks"))
 
+    # Get the question and answer for the specific card
     form_data = {"question": card[1], "answer": card[2]}
 
     if request.method == "POST":
         question = request.form.get("question")
         answer = request.form.get("answer")
 
+        # If the user does not enter a value for the question or the answer
         if not question or not answer:
             flash("Question and answer are required.")
             return render_template(
@@ -625,6 +660,7 @@ def edit_card(card_id):
                 edit_mode=True,
             )
 
+        # Update the flashcard details for the specific card
         cursor.execute(
             """
             UPDATE flashcards
@@ -657,6 +693,7 @@ def update_deck(deck_id):
     db = get_db()
     cursor = db.cursor()
 
+    # Find info for the deck owned by the user
     cursor.execute(
         """
         SELECT id, name, description, subject, cover_color
@@ -669,10 +706,12 @@ def update_deck(deck_id):
 
     deck = cursor.fetchone()
 
+    # If the deck is not found
     if not deck:
         flash("Deck not found.")
         return redirect(url_for("decks"))
 
+    # Get the info for the deck
     form_data = {
         "deck_name": deck[1],
         "subject": deck[3],
@@ -681,11 +720,14 @@ def update_deck(deck_id):
     }
 
     if request.method == "POST":
+
+        # Get the info entered by the user
         deck_name = request.form.get("deck_name", "").strip()
         subject = request.form.get("subject", "").strip()
         description = request.form.get("description", "").strip()
         cover_color = request.form.get("cover_color")
 
+        # Update the details for the deck
         form_data.update(
             {
                 "deck_name": deck_name,
@@ -695,6 +737,7 @@ def update_deck(deck_id):
             }
         )
 
+        # If the required details are not entered
         if not deck_name or not subject:
             flash("Deck name and subject are required.")
             return render_template(
@@ -769,6 +812,7 @@ def study(deck_id):
 
     deck = cursor.fetchone()
 
+    # If the deck is not found
     if not deck:
         flash("Deck not found.")
         return redirect(url_for("decks"))
@@ -785,17 +829,20 @@ def study(deck_id):
 
     flashcards = cursor.fetchall()
 
+    # If there are no flashcards in the deck
     if len(flashcards) == 0:
         flash("This deck doesn't have any flashcards.")
         return redirect(url_for("edit_deck", deck_id=deck_id))
 
-    # Start a new study session if this user is not currently studying this deck.
+    # Keep the current deck and card position in the session so the learner can
+    # continue an unfinished study run without creating duplicate session rows
     if session.get("study_deck") != deck_id:
         session["study_deck"] = deck_id
         session["cur_index"] = 0
         session["showing_answer"] = False
         session["reviewed_cards"] = []
 
+        # Insert the study session details
         cursor.execute(
             """
             INSERT INTO study_sessions
@@ -807,12 +854,16 @@ def study(deck_id):
 
         db.commit()
 
+        # Get the study session id and store in session variable
         session["study_session_id"] = cursor.lastrowid
 
     if request.method == "POST":
+
+        # Get the actions of the user
         action = request.form.get("action")
 
         if action == "flip":
+
             session["showing_answer"] = not session["showing_answer"]
 
             if len(flashcards) == 1 and session.get("study_session_id") is not None:
@@ -826,14 +877,15 @@ def study(deck_id):
                 ):
                     db.commit()
 
+        # If the user clicks next
         elif action == "next":
             if session["cur_index"] < len(flashcards) - 1:
                 session["cur_index"] += 1
 
             session["showing_answer"] = False
 
-            # Make sure user doesn't increase cards reviewed by spamming next and prev
-            # This is done by keeping track of the card numbers of the cards reviewed
+            # Each card should contribute only once to the session total, even when
+            # users click rapidly through the deck
             current_card_id = flashcards[session["cur_index"]]["id"]
 
             # If the current card not reviewed, update the cards reviewed in the database
@@ -848,6 +900,7 @@ def study(deck_id):
 
             session["showing_answer"] = False
 
+        # If the user clicks finish study
         elif action == "finish":
             if len(flashcards) == 1 and session.get("study_session_id") is not None:
                 current_card_id = flashcards[session["cur_index"]]["id"]
@@ -891,6 +944,7 @@ def study(deck_id):
 
     current_card = flashcards[session["cur_index"]]
 
+    # Change the text of the card
     card_text = (
         current_card["answer"]
         if session["showing_answer"]
@@ -1121,11 +1175,15 @@ def profile():
     """,
         (session["user_id"],),
     )
+
+    # The dates the user has studied
     study_dates = [
         datetime.strptime(row[0], "%Y-%m-%d").date() for row in cursor.fetchall()
     ]
     streak = calculate_streak(study_dates)
 
+    # The profile page pulls together account details and learning stats into one
+    # summary for the currently signed-in user
     return render_template(
         "profile.html",
         username=session["username"],
@@ -1145,7 +1203,7 @@ def delete_account():
     db = get_db()
     cursor = db.cursor()
 
-    # Delete the user's data
+    # Clear the user's progress and content before removing the account record
     cursor.execute("DELETE FROM study_sessions WHERE user_id = ?", (user_id,))
     cursor.execute(
         "DELETE FROM flashcards WHERE topic_id IN (SELECT id FROM topics WHERE user_id = ?)",
@@ -1164,6 +1222,8 @@ def delete_account():
 def logout():
     """Function for the logout button"""
 
+    # Clear the session so the user is signed out and cannot still access
+    # protected pages until they log in again
     session.clear()
     return redirect(url_for("home"))
 
